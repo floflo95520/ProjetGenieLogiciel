@@ -25,10 +25,16 @@ public class Piece {
 	public void setGauche() {
 		int largeur=img.getWidth();
 		int hauteur=img.getHeight();
-		
-		for(int x=0; x<largeur;x++) {
+		int argb;
+		int alpha;
+		int x=0;
+		int y=0;
+		argb=img.getRGB(x, y);
+		alpha=(argb >> 24) & 0xff;
+		while(alpha==0) {
 			
 		}
+		
 	}
 	
 }
