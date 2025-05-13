@@ -1,6 +1,7 @@
 package application;
 	
 import java.io.File;
+import classes.Piece;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -38,6 +39,12 @@ public class Main extends Application {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                                if (nomFichier.endsWith(ext)) {
+	                                	try {
+											new Piece(fichier.getPath(),fichier.getName());
+										} catch (Exception e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
 	                                	listView.getItems().add(fichier.getName());
 	                                }
 	                        }
