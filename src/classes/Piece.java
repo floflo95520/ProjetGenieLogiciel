@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -24,14 +25,14 @@ public class Piece {
             int[][] tab=largestRectangle();
             this.nom=nom;
             System.out.println(this.nom);
-            for (int i = 0; i < tab.length; i++) {
+           for (int i = 0; i < tab.length; i++) {
                 System.out.println("Point " + (i + 1) + " : (" + tab[i][0] + ", " + tab[i][1] + ")");
             }
-            
-            setSide(left,tab[0][0],tab[0][1]);
-            setSide(right,tab[3][0],tab[3][1]);
-            setSide(top,tab[0][0],tab[0][1]);
-            setSide(bottom,tab[3][0],tab[3][1]);
+            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
+            setSide("right",tab[1][0],tab[1][1],tab[3][0],tab[3][1]);
+            setSide("bottom",tab[3][0],tab[3][1],tab[2][0],tab[2][1]);
+            setSide("left",tab[2][0],tab[2][1],tab[0][0],tab[0][1]);
+            System.out.println(top);            
             used=false;
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,32 +102,35 @@ public class Piece {
 	    return new int[]{maxArea, left, right, height};
 	}
 	
-	public void setSide(String side, int x, int y) throws Exception {
-			if(side!=null) {
-				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+	public void setSide(String side, int x, int y, int x1, int y1) throws Exception {
+			if(side!="") {
+				int[][] matrix = new int[2][2];
 				int[][] imageMatrix=imageToMatrix(img);
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				System.out.println("ici");
 				switch(side) {
 					case "top":
-						int x1=x;
-						int y1=y;
-						while(x>0 && ((img.getRGB(x-1, y) >> 24) & 0xff)>0 ) {
-							x--;
+						while (x > 0 && ((img.getRGB(x - 1, y) >> 24) & 0xff) > 0) {
+						    x--;
 						}
-						while(y>0 && ((img.getRGB(x, y-1) >> 24) & 0xff)>0 ) {
-							y--;
+
+						while (y > 0 && ((img.getRGB(x, y - 1) >> 24) & 0xff) > 0) {
+						    y--;
 						}
-						while(x1<img.getWidth() && ((img.getRGB(x1+1, y)>>24)& 0xff)>0) {
-							x1++;
+
+						while (x1 + 1 < img.getWidth() && ((img.getRGB(x1 + 1, y) >> 24) & 0xff) > 0) {
+						    x1++;
 						}
-						while(y1>0 && ((img.getRGB(x,y1-1)>>24)& 0xff)>0) {
-							y1--;
+
+						while (y1 > 0 && ((img.getRGB(x1, y1 - 1) >> 24) & 0xff) > 0) {
+						    y1--;
 						}
-						
-						int[][] matrix = new int[2][2];
 						matrix[0][0]=0;
 						matrix[0][1]=0;
 						matrix[1][0]=0;
 						matrix[1][1]=imageMatrix[y][x];
+						
+						
 						while(x<x1) {
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
@@ -185,31 +189,253 @@ public class Piece {
 						    if (hex.length() == 1) String.append('0');
 						    String.append(hex);
 						}
+						
 						this.top=String.toString();
+						System.out.println(top);
+						break;
+					case "right":
+						
+						while(x+1<img.getWidth() && ((img.getRGB(x+1, y) >> 24) & 0xff)>0 ) {
+							x++;
+						}
+						while(y>0 && ((img.getRGB(x, y-1) >> 24) & 0xff)>0 ) {
+							y--;
+						}
+						while(x1+1<img.getWidth() && ((img.getRGB(x1+1, y)>>24)& 0xff)>0) {
+							x1++;
+						}
+						while(y1+1<img.getHeight() && ((img.getRGB(x,y1+1)>>24)& 0xff)>0) {
+							y1++;
+						}
+						matrix[0][0]=0;
+						matrix[0][1]=0;
+						matrix[1][0]=imageMatrix[y][x];
+						matrix[1][1]=0;
+						
+						while(y<y1) {
+							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
+								digest.update("R".getBytes(StandardCharsets.UTF_8));
+								matrix[0][0]=matrix[0][1];
+								matrix[1][0]=matrix[1][1];
+								if(x+1<img.getWidth()) {
+									matrix[1][1]=imageMatrix[y][x+1];
+									matrix[0][1]=imageMatrix[y-1][x+1];
+								}
+								else {
+									matrix[1][1]=0;
+									matrix[0][1]=0;
+								}
+								x++;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[1][0]==0 && matrix[1][1]==0 && matrix[0][1]==1)  ) {
+								digest.update("U".getBytes(StandardCharsets.UTF_8));
+								matrix[1][0]=matrix[0][0];
+								matrix[0][1]=matrix[1][1];
+								if(y>2) {
+									matrix[0][0]=imageMatrix[y-2][x-1];
+									matrix[0][1]=imageMatrix[y-2][x];
+								}
+								else {
+									matrix[0][0]=0;
+									matrix[0][1]=0;
+								}
+								y--;
+							}
+							else if((matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][1]==1 && matrix[1][0]==0) || (matrix[0][0]==1 && matrix [0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==0)) {
+								digest.update("L".getBytes(StandardCharsets.UTF_8));
+								matrix[0][1]=matrix[0][0];
+								matrix[1][1]=matrix[1][0];
+								if(x>2) {
+									matrix[0][0]=imageMatrix[y-1][x-2];
+									matrix[1][0]=imageMatrix[y][x-2];
+								}
+								else {
+									matrix[0][0]=0;
+									matrix[1][0]=0;
+								}
+								x--;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][1]==0 && matrix[1][0]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[0][1]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==0)) {
+								digest.update("B".getBytes(StandardCharsets.UTF_8));
+								matrix[0][0]=matrix[1][0];
+								matrix[0][1]=matrix[1][1];
+								matrix[1][0]=imageMatrix[y+1][x-1];
+								if(x==img.getWidth()) matrix[1][1]=0;
+								else matrix[1][1]=imageMatrix[y+1][x];
+								y++;
+							}
+						} 
+						byte[] hashR = digest.digest();
+						StringBuilder StringR = new StringBuilder();
+						for (byte b : hashR) {
+						    String hex = Integer.toHexString(0xff & b);
+						    if (hex.length() == 1) StringR.append('0');
+						    StringR.append(hex);
+						}
+						
+						this.right=StringR.toString();
+						System.out.println(right);
+						break;
+					case "bottom":
+						while(x+1<img.getWidth() && ((img.getRGB(x+1, y) >> 24) & 0xff)>0 ) {
+							x++;
+						}
+						while(y+1<img.getHeight() && ((img.getRGB(x, y+1) >> 24) & 0xff)>0 ) {
+							y++;
+						}
+						while(x1>0 && ((img.getRGB(x1-1, y)>>24)& 0xff)>0) {
+							x1--;
+						}
+						while(y1+1<img.getHeight() && ((img.getRGB(x,y1+1)>>24)& 0xff)>0) {
+							y1++;
+						}
+						matrix[0][0]=imageMatrix[y][x];
+						matrix[0][1]=0;
+						matrix[1][0]=0;
+						matrix[1][1]=0;
+						while(x1<x) {
+							System.out.println(y);
+							System.out.println(x);
+							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
+								digest.update("R".getBytes(StandardCharsets.UTF_8));
+								matrix[0][0]=matrix[0][1];
+								matrix[1][0]=matrix[1][1];
+								matrix[1][1]=imageMatrix[y+1][x+2];
+								if(y!=0) {
+									matrix[0][1]=imageMatrix[y-1][x+1];
+								}
+								else {
+									matrix[0][1]=0;
+								}
+								x++;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[1][0]==0 && matrix[1][1]==0 && matrix[0][1]==1)  ) {
+								digest.update("U".getBytes(StandardCharsets.UTF_8));
+								matrix[1][0]=matrix[0][0];
+								matrix[1][1]=matrix[0][1];
+								if(y>2) {
+									matrix[0][0]=imageMatrix[y-2][x-1];
+									matrix[0][1]=imageMatrix[y-2][x];
+								}
+								else {
+									matrix[0][0]=0;
+									matrix[0][1]=0;
+								}
+								y--;
+							}
+							else if((matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][1]==1 && matrix[1][0]==0) || (matrix[0][0]==1 && matrix [0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==0)) {
+								digest.update("L".getBytes(StandardCharsets.UTF_8));
+								System.out.println("ouais");
+								matrix[0][1]=matrix[0][0];
+								matrix[1][1]=matrix[1][0];
+								matrix[0][0]=imageMatrix[y][x-1];
+								if(y+1<img.getHeight()) {
+									matrix[1][0]=imageMatrix[y+1][x-1];
+								}
+								else {
+									matrix[1][0]=0;
+								}
+								x--;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][1]==0 && matrix[1][0]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[0][1]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==0)) {
+								digest.update("B".getBytes(StandardCharsets.UTF_8));
+								System.out.println("present");
+								matrix[0][0]=matrix[1][0];
+								matrix[0][1]=matrix[1][1];
+								matrix[1][0]=imageMatrix[y+1][x-1];
+								matrix[1][1]=imageMatrix[y+1][x];
+								y++;
+							}
+						} 
+						byte[] hashB = digest.digest();
+						StringBuilder StringB = new StringBuilder();
+						for (byte b : hashB) {
+						    String hex = Integer.toHexString(0xff & b);
+						    if (hex.length() == 1) StringB.append('0');
+						    StringB.append(hex);
+						}
+						
+						this.bottom=StringB.toString();
+						System.out.println(bottom);
 						break;
 					case "left":
 						while(x>0 && ((img.getRGB(x-1, y) >> 24) & 0xff)>0 ) {
 							x--;
 						}
-						while(y>0 && ((img.getRGB(x, y-1) >> 24) & 0xff)>0 ) {
-							y--;
+						while(y+1<img.getHeight() && ((img.getRGB(x, y+1) >> 24) & 0xff)>0 ) {
+							y++;
 						}
-						break;
-					case "right":
-						while(x>0 && ((img.getRGB(x+1, y) >> 24) & 0xff)>0 ) {
-							x--;
+						while(x1>0 && ((img.getRGB(x1-1, y)>>24)& 0xff)>0) {
+							x1--;
 						}
-						while(y>0 && ((img.getRGB(x, y+1) >> 24) & 0xff)>0 ) {
-							y--;
+						while(y1>0 && ((img.getRGB(x,y1-1)>>24)& 0xff)>0) {
+							y1--;
 						}
-						break;
-					case "bottom":
-						while(x>0 && ((img.getRGB(x+1, y) >> 24) & 0xff)>0 ) {
-							x--;
+						matrix[0][0]=0;
+						matrix[0][1]=imageMatrix[y][x];;
+						matrix[1][0]=0;
+						matrix[1][1]=0;
+						
+						while(y1<y) {
+							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
+								digest.update("R".getBytes(StandardCharsets.UTF_8));
+								matrix[0][0]=matrix[0][1];
+								matrix[1][0]=matrix[1][1];
+								matrix[1][1]=imageMatrix[y][x+1];
+								if(y!=0) {
+									matrix[0][1]=imageMatrix[y-1][x+1];
+								}
+								else {
+									matrix[0][1]=0;
+								}
+								x++;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[1][0]==0 && matrix[1][1]==0 && matrix[0][1]==1)  ) {
+								digest.update("U".getBytes(StandardCharsets.UTF_8));
+								matrix[1][0]=matrix[0][0];
+								matrix[0][1]=matrix[1][1];
+								if(y>2) {
+									matrix[0][0]=imageMatrix[y-2][x-1];
+									matrix[0][1]=imageMatrix[y-2][x];
+								}
+								else {
+									matrix[0][0]=0;
+									matrix[0][1]=0;
+								}
+								y--;
+							}
+							else if((matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][1]==1 && matrix[1][0]==0) || (matrix[0][0]==1 && matrix [0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==0)) {
+								digest.update("L".getBytes(StandardCharsets.UTF_8));
+								matrix[0][1]=matrix[0][0];
+								matrix[1][1]=matrix[1][0];
+								if(x>2) {
+									matrix[0][0]=imageMatrix[y-1][x-2];
+									matrix[1][0]=imageMatrix[y][x-2];
+								}
+								else {
+									matrix[0][0]=0;
+									matrix[1][0]=0;
+								}
+								x--;
+							}
+							else if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][1]==0 && matrix[1][0]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[0][1]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==0)) {
+								digest.update("B".getBytes(StandardCharsets.UTF_8));
+								matrix[0][0]=matrix[1][0];
+								matrix[0][1]=matrix[1][1];
+								matrix[1][0]=imageMatrix[y+1][x-1];
+								matrix[1][1]=imageMatrix[y+1][x];
+								y++;
+							}
+						} 
+						byte[] hashL = digest.digest();
+						StringBuilder StringL = new StringBuilder();
+						for (byte b : hashL) {
+						    String hex = Integer.toHexString(0xff & b);
+						    if (hex.length() == 1) StringL.append('0');
+						    StringL.append(hex);
 						}
-						while(y>0 && ((img.getRGB(x, y+1) >> 24) & 0xff)>0 ) {
-							y--;
-						}
+						this.left=StringL.toString();
+						System.out.println(left);
 						break;
 					default:
 						throw new Exception("Erreur dans la configuration des pièces");
@@ -220,6 +446,7 @@ public class Piece {
 				
 	}
 }
+	
 	
 	public Boolean getState() {
 		return this.used;
