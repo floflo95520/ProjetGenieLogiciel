@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+//import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -108,6 +108,7 @@ public class Piece {
 				int[][] imageMatrix=imageToMatrix(img);
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				System.out.println("ici");
+				/*
 				switch(side) {
 					case "top":
 						while (x > 0 && ((img.getRGB(x - 1, y) >> 24) & 0xff) > 0) {
@@ -441,7 +442,7 @@ public class Piece {
 						throw new Exception("Erreur dans la configuration des pièces");
 						
 			} 
-
+*/
 				
 				
 	}
