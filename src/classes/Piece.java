@@ -454,6 +454,19 @@ public class Piece {
 	public void setState(Boolean state) {
 		this.used=state;
 	}
+	public String getTopSignature() {
+		return this.top; 
+	}
+	public String getLeftSignature() {
+		return this.left; 
+	}
+	public String getRightSignature() {
+		return this.right; 
+	}
+	public String getBottomSignature() {
+		return this.bottom; 
+	}
+	
 	
 	private int[][] imageToMatrix(BufferedImage img){
 		int[][] matrix= new int[img.getHeight()][img.getWidth()];

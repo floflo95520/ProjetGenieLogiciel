@@ -1,6 +1,11 @@
 package application;
 	
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 import classes.Piece;
 
 import javafx.application.Application;
@@ -17,6 +22,11 @@ import javafx.stage.DirectoryChooser;
 
 
 public class Main extends Application {
+	
+	private List<Piece> Liste2Pieces = new ArrayList<>();
+	
+	private HashMap<String, List<Integer>> signatureMap = new HashMap<>();
+	
 	@Override
 	public void start(Stage primaryStage) {
 
@@ -39,21 +49,56 @@ public class Main extends Application {
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
 		                if (fichiers != null) {
+		                	int index = 0;
 	                        for (File fichier : fichiers) {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
 	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
-											new Piece(fichier.getPath(),fichier.getName());
+											Piece piece = new Piece(fichier.getPath(),fichier.getName());
+											Liste2Pieces.add(piece);
+											
+											signatureMap.computeIfAbsent(piece.getTopSignature(), k -> new ArrayList<>()).add(index);
+											signatureMap.computeIfAbsent(piece.getLeftSignature(), k -> new ArrayList<>()).add(index);
+											signatureMap.computeIfAbsent(piece.getRightSignature(), k -> new ArrayList<>()).add(index);
+											signatureMap.computeIfAbsent(piece.getBottomSignature(), k -> new ArrayList<>()).add(index);
+											
+											index++;
+											
 										} catch (Exception e1) {
 											// TODO Auto-generated catch block
 											e1.printStackTrace();
 										}
 	                                	listView.getItems().add(fichier.getName());
 	                                }
+	                        	}
 	                        }
+	                        	System.out.println("Signatures enregistrées :");
+	                        	for (String key : signatureMap.keySet()) {
+	                        		System.out.println(key + " -> Pièce n°" + signatureMap.get(key));}
+	                        	{
+	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size());
+	                        		
+	                        		/*HashMap<String, Integer> borduresMap = new HashMap<>();
+	                        		HashMap<String, Integer> interieursMap = new HashMap<>();
+
+	                        		for (Map.Entry<String, Integer> entry : signatureMap.entrySet()) {
+	                        		    String signature = entry.getKey();
+	                        		    Integer pieceIndex = entry.getValue();
+
+	                        		    if (signature.endsWith("_0") || signature.endsWith("_1")) {
+	                        		        interieursMap.put(signature, pieceIndex);
+	                        		    } else {
+	                        		        borduresMap.put(signature, pieceIndex);
+	                        		    }
+                        		    for (Map.Entry<String, Integer> poulet : borduresMap.entrySet()) {
+                        		    	String signa = poulet.getKey();
+                        		    	Integer pieceInd = poulet.getValue();
+                        		    	
+	                        		}*/
 	                        }
+	                        	
 	                       // ouvrirFenetrePuzzle(fichiers);
 		                }
 	                     else {
@@ -61,7 +106,7 @@ public class Main extends Application {
 	                    }
 		            } else {
 		            	listView.getItems().add("Aucun dossier sélectionné.");
-		                System.out.println("Aucun dossier sélectionné.");
+		                /*System.out.println("Aucun dossier sélectionné.");*/
 		            }
 		        });
 			root.setTop(D);
