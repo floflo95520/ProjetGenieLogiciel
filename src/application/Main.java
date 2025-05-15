@@ -30,7 +30,6 @@ public class Main extends Application {
 		            
 
 		            if (dossier != null) {
-		            	int i=0;
 		            	listView.getItems().clear();
 		                System.out.println("Dossier sélectionné : " + dossier.getAbsolutePath());
 		                File[] fichiers = dossier.listFiles();
@@ -40,9 +39,8 @@ public class Main extends Application {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
-	                                if (nomFichier.endsWith(ext) && i<1) {
+	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
-	                                		i++;
 											new Piece(fichier.getPath(),fichier.getName());
 										} catch (Exception e1) {
 											// TODO Auto-generated catch block
