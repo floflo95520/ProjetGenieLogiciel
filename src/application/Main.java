@@ -54,7 +54,7 @@ public class Main extends Application {
 	                                }
 	                        }
 	                        }
-	                        ouvrirFenetrePuzzle(fichiers);
+	                       // ouvrirFenetrePuzzle(fichiers);
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");

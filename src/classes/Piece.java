@@ -28,11 +28,12 @@ public class Piece {
             this.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
             int[][] tab=corners();
             this.nom=nom;
+            System.out.println(nom);
            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
            setSide("right",tab[1][0],tab[1][1],tab[3][0],tab[3][1]);
            setSide("bottom",tab[3][0],tab[3][1],tab[2][0],tab[2][1]);
            setSide("left",tab[2][0],tab[2][1],tab[0][0],tab[0][1]); 
-           System.out.println(nom);
+           
            System.out.println("top= "+top);
            System.out.println("right= "+right);
            System.out.println("bottom= "+bottom);
@@ -110,6 +111,7 @@ public class Piece {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				switch(side) {
 					case "top":
+						System.out.println("top");
 						String t="";
 						StringBuilder sTop=new StringBuilder();
 						matrix[0][0]=0;
@@ -120,6 +122,7 @@ public class Piece {
 						
 						while(x<x1) {
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
+								System.out.println("R");
 								sTop.append("R");
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
 								matrix[0][0]=matrix[0][1];
@@ -137,6 +140,7 @@ public class Piece {
 								if(t.equals("")) {
 									t="1";
 								}
+								System.out.println("U");
 								sTop.append("U");
 								digest.update("U".getBytes(StandardCharsets.UTF_8));
 								matrix[1][0]=matrix[0][0];
@@ -152,6 +156,7 @@ public class Piece {
 								y--;
 							}
 							else if((matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][1]==1 && matrix[1][0]==0) || (matrix[0][0]==1 && matrix [0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==0)) {
+								System.out.println("L");
 								sTop.append("L");
 								digest.update("L".getBytes(StandardCharsets.UTF_8));
 
@@ -171,6 +176,7 @@ public class Piece {
 								if(t.equals("")) {
 									t="0";
 								}
+								
 								sTop.append("B");
 								digest.update("B".getBytes(StandardCharsets.UTF_8));
 
@@ -193,6 +199,10 @@ public class Piece {
 						this.seqTop=sTop.toString();
 						break;
 					case "right":
+						System.out.println(x);
+						System.out.println(y);
+
+						System.out.println("right");
 						StringBuilder sRight=new StringBuilder();
 						matrix[0][0]=0;
 						matrix[0][1]=0;
@@ -200,7 +210,16 @@ public class Piece {
 						matrix[1][1]=0;
 						
 						while(y<y1) {
+							for(int i=0;i<2;i++) {
+								for(int j=0;j<2;j++) {
+									System.out.println(matrix[i][j]);
+								}
+							}
+							System.out.println("x="+x);
+							System.out.println("y="+y);
+
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {;
+								System.out.println("R");	
 								sRight.append("R");
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
 								matrix[0][0]=matrix[0][1];
@@ -216,13 +235,14 @@ public class Piece {
 								x++;
 							}
 							else if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[1][0]==0 && matrix[1][1]==0 && matrix[0][1]==1)  ) {
+								System.out.println("U");
 								sRight.append("U");
 								digest.update("U".getBytes(StandardCharsets.UTF_8));
 								matrix[1][0]=matrix[0][0];
 								matrix[1][1]=matrix[0][1];
 								if(y>2) {
-									matrix[0][0]=imageMatrix[y-2][x-1];
-									matrix[0][1]=imageMatrix[y-2][x];
+									matrix[0][0]=imageMatrix[y-2][x];
+									matrix[0][1]=imageMatrix[y-2][x+1];
 								}
 								else {
 									matrix[0][0]=0;
@@ -231,13 +251,14 @@ public class Piece {
 								y--;
 							}
 							else if((matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][1]==1 && matrix[1][0]==0) || (matrix[0][0]==1 && matrix [0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==0)) {
+								System.out.println("L");
 								sRight.append("L");
 								digest.update("L".getBytes(StandardCharsets.UTF_8));
 								matrix[0][1]=matrix[0][0];
 								matrix[1][1]=matrix[1][0];
-								if(x>2) {
-									matrix[0][0]=imageMatrix[y-1][x-2];
-									matrix[1][0]=imageMatrix[y][x-2];
+								if(x>1) {
+									matrix[0][0]=imageMatrix[y-1][x-1];
+									matrix[1][0]=imageMatrix[y][x-1];
 								}
 								else {
 									matrix[0][0]=0;
@@ -246,6 +267,7 @@ public class Piece {
 								x--;
 							}
 							else if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][1]==0 && matrix[1][0]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[0][1]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==1 && matrix[1][1]==0)) {
+								System.out.println("B");
 								sRight.append("B");
 								digest.update("B".getBytes(StandardCharsets.UTF_8));
 								matrix[0][0]=matrix[1][0];
@@ -268,6 +290,7 @@ public class Piece {
 						this.seqRight=sRight.toString();
 						break;
 					case "bottom":
+						System.out.println("bottom");
 						StringBuilder sBottom=new StringBuilder();
 						matrix[0][0]=imageMatrix[y][x];
 						matrix[0][1]=0;
@@ -344,6 +367,7 @@ public class Piece {
 						this.seqBottom=sBottom.toString();
 						break;
 					case "left":
+						System.out.println("left");
 						StringBuilder sLeft=new StringBuilder();
 						matrix[0][0]=0;
 						matrix[0][1]=imageMatrix[y][x];;
