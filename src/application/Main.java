@@ -74,25 +74,32 @@ public class Main extends Application {
 	                                }
 	                        	}
 	                        }
-	                        	System.out.println("Signatures enregistrées :");
+	                        	/*System.out.println("Signatures enregistrées :");
 	                        	for (String key : signatureMap.keySet()) {
 	                        		System.out.println(key + " -> Pièce n°" + signatureMap.get(key));}
-	                        	{
-	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size());
-	                        		
-	                        		/*HashMap<String, Integer> borduresMap = new HashMap<>();
-	                        		HashMap<String, Integer> interieursMap = new HashMap<>();
+	                               {
+	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size()); */
+	                        {
+	                        		HashMap<String, List<Integer>> borduresMap = new HashMap<>();
+	                        		HashMap<String, List<Integer>> interieursMap = new HashMap<>();
 
-	                        		for (Map.Entry<String, Integer> entry : signatureMap.entrySet()) {
+	                        		for (Map.Entry<String, List<Integer>> entry : signatureMap.entrySet()) {
+	                        	
 	                        		    String signature = entry.getKey();
-	                        		    Integer pieceIndex = entry.getValue();
+	                        		    List<Integer> pieceIndices = entry.getValue();
 
 	                        		    if (signature.endsWith("_0") || signature.endsWith("_1")) {
-	                        		        interieursMap.put(signature, pieceIndex);
+	                        		        interieursMap.computeIfAbsent(signature, k -> new ArrayList<>(pieceIndices));
 	                        		    } else {
-	                        		        borduresMap.put(signature, pieceIndex);
+	                        		        borduresMap.computeIfAbsent(signature, k -> new ArrayList<>(pieceIndices));
 	                        		    }
-                        		    for (Map.Entry<String, Integer> poulet : borduresMap.entrySet()) {
+	                        		    }
+	                        		    System.out.println("Signatures enregistrées :");
+	    	                        	for (String key : borduresMap.keySet()) {
+	    	                        		System.out.println(key + " -> Pièce n°" + borduresMap.get(key));
+
+	                        		}
+                        		   /* for (Map.Entry<String, List<Integer>> poulet : borduresMap.entrySet()) {
                         		    	String signa = poulet.getKey();
                         		    	Integer pieceInd = poulet.getValue();
                         		    	
@@ -100,7 +107,6 @@ public class Main extends Application {
 	                        }
 	                        	
 	                       // ouvrirFenetrePuzzle(fichiers);
-
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
@@ -139,10 +145,10 @@ public class Main extends Application {
 	                //imageView.setScaleX(0.2);
 	                //imageView.setScaleY(0.2);
 	                
-	                imageView.setFitHeight(10);
+	                imageView.setFitHeight(100);
 	                //imageView.setPreserveRatio(true);
 	                
-	                imageView.setFitWidth(10);
+	                imageView.setFitWidth(100);
 	                //imageView.setPreserveRatio(true);
 					
 	                
@@ -159,8 +165,8 @@ public class Main extends Application {
 	            }
 	        }
 	    }
-
-	    Scene scene = new Scene(puzzlePane, 200, 100);
+	
+	    Scene scene = new Scene(puzzlePane, 800, 800);
 	    puzzleStage.setTitle("Puzzle Assemblé");
 	    puzzleStage.setScene(scene);
 	    puzzleStage.show();
