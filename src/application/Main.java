@@ -100,6 +100,7 @@ public class Main extends Application {
 	                        }
 	                        	
 	                       // ouvrirFenetrePuzzle(fichiers);
+
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
@@ -138,10 +139,10 @@ public class Main extends Application {
 	                //imageView.setScaleX(0.2);
 	                //imageView.setScaleY(0.2);
 	                
-	                imageView.setFitHeight(100);
+	                imageView.setFitHeight(10);
 	                //imageView.setPreserveRatio(true);
 	                
-	                imageView.setFitWidth(100);
+	                imageView.setFitWidth(10);
 	                //imageView.setPreserveRatio(true);
 					
 	                
@@ -159,7 +160,7 @@ public class Main extends Application {
 	        }
 	    }
 
-	    Scene scene = new Scene(puzzlePane, 2000, 1000);
+	    Scene scene = new Scene(puzzlePane, 200, 100);
 	    puzzleStage.setTitle("Puzzle Assemblé");
 	    puzzleStage.setScene(scene);
 	    puzzleStage.show();
