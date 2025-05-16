@@ -1,10 +1,14 @@
 package application;
 	
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
+
 import java.util.List;
 import classes.Piece;
 
@@ -106,7 +110,7 @@ public class Main extends Application {
 	                        		}*/
 	                        }
 	                        	
-	                       // ouvrirFenetrePuzzle(fichiers);
+	                       ouvrirFenetrePuzzle(fichiers);
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
@@ -132,33 +136,59 @@ public class Main extends Application {
 	    Pane puzzlePane = new Pane();
 	    final double TAILLE_CASE = 100;
 	    int i = 0;
-	    int x = 0, y=0;
+	    int x = 0, y=0, x1, x2, y1=0, y2=0;
+	    double yplus = 0;
+	    int[][] tab;
 	    for (File fichier : fichiers) {
 	        String nomFichier = fichier.getName().toLowerCase();
 	        if (nomFichier.endsWith(".png")) {
 	            try {
 	                // Image et ImageView
+	     
+	                
+	                
+	                double ratio = 0.3; // 30%
+
 	                Image image = new Image(fichier.toURI().toString());
 	                ImageView imageView = new ImageView(image);
-	                
-	                
-	                //imageView.setScaleX(0.2);
-	                //imageView.setScaleY(0.2);
-	                
-	                imageView.setFitHeight(100);
-	                //imageView.setPreserveRatio(true);
-	                
-	                imageView.setFitWidth(100);
-	                //imageView.setPreserveRatio(true);
-					
-	                
-	                imageView.setLayoutX(x);
-	                imageView.setLayoutY(0);
 
-	                x += 80;
-
+	                imageView.setFitWidth(image.getWidth() * ratio);
+	                imageView.setFitHeight(image.getHeight() * ratio);
+	                imageView.setPreserveRatio(false); // car tu définis toi-même les 2
+	                
+	                BufferedImage bufferedImage = ImageIO.read(fichier);
+	                tab = Piece.corners(bufferedImage);
+	                x1 = tab[0][0];
+	                x2 = tab[1][0];
+	                
+	                y1 = tab[0][1];
+	                y2 = tab[2][1];
+	                
+	                imageView.setLayoutX(x - (x1 * ratio));
+	                System.out.println("valeur de x1: " + x1);
+	                imageView.setLayoutY(y - (y1 * ratio));
+	                
+	                if(x == 0) {
+	                	yplus = (y2 - y1) * ratio;
+	                }
+	                
+	                x += (x2 - x1) * ratio;
+	                
+	                if(x + ((x2 - x1 ) * ratio ) >= 700) {
+	                	x = 0;
+	                	y += yplus;
+	                }
+	                
+	                
+	                
+	                
+	                
+	                System.out.println("valeur de x" + x + " valeur de y : " + y);
+	                
+	                //System.out.println("valeur de x" + x + " valeur de y : " + y);
+	                
 	                puzzlePane.getChildren().add(imageView);
-	                i++;
+	               
 
 	            } catch (Exception e) {
 	                e.printStackTrace();

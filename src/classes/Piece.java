@@ -11,7 +11,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 
 public class Piece {
-	private BufferedImage img;
+	private static BufferedImage img;
 	private String nom;
 	private Boolean used;
 	private String left;
@@ -26,7 +26,7 @@ public class Piece {
 	public Piece(String imagePath,String nom) throws Exception {
         try {
             this.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
-            int[][] tab=corners();
+            int[][] tab=corners(this.img);
             this.nom=nom;
             System.out.println(nom);
            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
@@ -45,7 +45,7 @@ public class Piece {
         }
     }
 
-	private int[][] corners(){
+	public static int[][] corners(BufferedImage img){
 		int height =img.getHeight();
 		int width=img.getWidth();
 		int[][] tab= new int[4][2];
