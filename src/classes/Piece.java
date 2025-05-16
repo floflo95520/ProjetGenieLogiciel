@@ -7,17 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
 import javax.imageio.ImageIO;
 
 public class Piece {
 	private static BufferedImage img;
 	private String nom;
-	private Boolean used;
-	private String left;
-	private String seqLeft;
-	private String right;
-	private String seqRight;
+
+    public String getNom() {
+        return nom;
+    }
 	private String top;
 	private String seqTop;
 	private String bottom;
