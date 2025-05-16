@@ -13,13 +13,20 @@ public class Piece {
 	private static BufferedImage img;
 	private String nom;
 
-    public String getNom() {
+    private String top;
+    private String seqTop;
+    private String bottom;
+    private String seqBottom;
+    private String left;
+    private String seqLeft;
+    private String right;
+    private String seqRight;
+    private boolean used;
+
+	public String getNom() {
         return nom;
     }
-	private String top;
-	private String seqTop;
-	private String bottom;
-	private String seqBottom;
+
 	
 	public Piece(String imagePath,String nom) throws Exception {
         try {
@@ -37,7 +44,7 @@ public class Piece {
            System.out.println("bottom= "+bottom);
            System.out.println("left= "+left);
 
-            used=false;
+            this.used = false;
         } catch (IOException e) {
             e.printStackTrace();
         }
