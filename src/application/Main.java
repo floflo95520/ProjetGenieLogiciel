@@ -34,7 +34,7 @@ public class Main extends Application {
 	private HashMap<String, List<Piece>> signatureMap = new HashMap<>();
 	
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception {
 
 		try {
 			BorderPane root = new BorderPane();
@@ -60,7 +60,7 @@ public class Main extends Application {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
-	                                if (nomFichier.endsWith(ext)) {
+	                                if (nomFichier.endsWith(ext) && fichier.getName().equals("img_3_2.png")) {
 	                                	try {
 											Piece piece = new Piece(fichier.getPath(),fichier.getName());
 											pieceList.addPiece(piece);
@@ -87,7 +87,7 @@ public class Main extends Application {
 	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size()); */
 	                        {
 	                        		ListePieces pieceCorners=new ListePieces();
-	                        		ListePieces pieceCote=new ListePieces();
+	                        		ListePieces pieceBorders=new ListePieces();
 
 	                        		for (Piece p : pieceList.getPieces()) {
 	                        			int count=0;
@@ -104,6 +104,32 @@ public class Main extends Application {
 	                        				count++;
 	                        			}
 	                        			
+	                        			
+	                        			if(count==1) {
+	                        				pieceCorners.addPiece(p);
+	                        			}
+	                        			else if(count==2) {
+	                        				pieceBorders.addPiece(p);
+	                        			}
+	                        			else if(count>2) {
+	                        				System.out.println(p.getNom());
+	                        				System.out.println(p.getSeqTop());
+	                        				System.out.println(p.getSeqRight());
+	                        				System.out.println(p.getSeqLeft());
+	                        				System.out.println(p.getSeqBottom());
+	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+	                        				System.exit(1);
+	                        			}
+	                        			
+	                        		}
+	                        		
+	                        		for (Piece p: pieceCorners.getPieces()) {
+	                        			System.out.println(p.getNom());
+	                        			System.out.println(pieceCorners.getNumberOfPieces());
+	                        		}
+	                        		for (Piece p: pieceBorders.getPieces()) {
+	                        			System.out.println(p.getNom());
+	                        			System.out.println(pieceBorders.getNumberOfPieces());
 	                        		}
                         		   /* for (Map.Entry<String, List<Integer>> poulet : borduresMap.entrySet()) {
                         		    	String signa = poulet.getKey();

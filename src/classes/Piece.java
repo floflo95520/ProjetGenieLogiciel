@@ -126,6 +126,13 @@ public class Piece {
 						
 						
 						while(x<x1) {
+							System.out.println("x =" +x);
+							System.out.println("y=" +y);
+							for(int i=0;i<2;i++) {
+								for (int j=0;j<2;j++) {
+									System.out.println(matrix[i][j]);
+								}
+							}
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								sTop.append("R");
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
@@ -522,6 +529,17 @@ public class Piece {
 				int argb = img.getRGB(x, y);
 	            int alpha = (argb >> 24) & 0xff;
 	            matrix[y][x] = (alpha != 0) ? 1 : 0;
+			}
+		}
+		for (int j=0;j<img.getHeight();j++) {
+			for (int i=0;i<img.getWidth();i++) {
+				
+				if(matrix[j][i]==0) {
+					System.out.println("oui");
+					System.out.println("y="+j);
+				
+				System.out.println("x="+i);
+				System.out.println(matrix[j][i]);}
 			}
 		}
 		return matrix;
