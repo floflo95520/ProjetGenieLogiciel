@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import java.util.List;
+
+import classes.ListePieces;
 import classes.Piece;
 
 import javafx.application.Application;
@@ -27,9 +29,9 @@ import javafx.stage.DirectoryChooser;
 
 public class Main extends Application {
 	
-	private List<Piece> Liste2Pieces = new ArrayList<>();
+	private ListePieces pieceList = new ListePieces();
 	
-	private HashMap<String, List<Integer>> signatureMap = new HashMap<>();
+	private HashMap<String, List<Piece>> signatureMap = new HashMap<>();
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -38,7 +40,7 @@ public class Main extends Application {
 			BorderPane root = new BorderPane();
 			Button D= new Button("Sélectionner un dossier");
 			ListView<String> listView = new ListView<>();
-			 D.setOnAction(e -> {
+		    D.setOnAction(e -> {
 		            DirectoryChooser chooser = new DirectoryChooser();
 		            listView.getItems().clear();		            
 		            chooser.setTitle("Sélectionnez un dossier");
@@ -61,12 +63,12 @@ public class Main extends Application {
 	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
 											Piece piece = new Piece(fichier.getPath(),fichier.getName());
-											Liste2Pieces.add(piece);
+											pieceList.addPiece(piece);
 											
-											signatureMap.computeIfAbsent(piece.getTopSignature(), k -> new ArrayList<>()).add(index);
-											signatureMap.computeIfAbsent(piece.getLeftSignature(), k -> new ArrayList<>()).add(index);
-											signatureMap.computeIfAbsent(piece.getRightSignature(), k -> new ArrayList<>()).add(index);
-											signatureMap.computeIfAbsent(piece.getBottomSignature(), k -> new ArrayList<>()).add(index);
+											signatureMap.computeIfAbsent(piece.getTopSignature(), k -> new ArrayList<>()).add(piece);
+											signatureMap.computeIfAbsent(piece.getLeftSignature(), k -> new ArrayList<>()).add(piece);
+											signatureMap.computeIfAbsent(piece.getRightSignature(), k -> new ArrayList<>()).add(piece);
+											signatureMap.computeIfAbsent(piece.getBottomSignature(), k -> new ArrayList<>()).add(piece);
 											
 											index++;
 											
@@ -84,24 +86,24 @@ public class Main extends Application {
 	                               {
 	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size()); */
 	                        {
-	                        		HashMap<String, List<Integer>> borduresMap = new HashMap<>();
-	                        		HashMap<String, List<Integer>> interieursMap = new HashMap<>();
+	                        		ListePieces pieceCorners=new ListePieces();
+	                        		ListePieces pieceCote=new ListePieces();
 
-	                        		for (Map.Entry<String, List<Integer>> entry : signatureMap.entrySet()) {
-	                        	
-	                        		    String signature = entry.getKey();
-	                        		    List<Integer> pieceIndices = entry.getValue();
-
-	                        		    if (signature.endsWith("_0") || signature.endsWith("_1")) {
-	                        		        interieursMap.computeIfAbsent(signature, k -> new ArrayList<>(pieceIndices));
-	                        		    } else {
-	                        		        borduresMap.computeIfAbsent(signature, k -> new ArrayList<>(pieceIndices));
-	                        		    }
-	                        		    }
-	                        		    System.out.println("Signatures enregistrées :");
-	    	                        	for (String key : borduresMap.keySet()) {
-	    	                        		System.out.println(key + " -> Pièce n°" + borduresMap.get(key));
-
+	                        		for (Piece p : pieceList.getPieces()) {
+	                        			int count=0;
+	                        			if(Piece.isSingleCharRepeatedUntilUnderscore(p.getSeqTop())) {
+	                        				count++;
+	                        			}
+	                        			if(Piece.isSingleCharRepeatedUntilUnderscore(p.getSeqRight())) {
+	                        				count++;
+	                        			}
+	                        			if(Piece.isSingleCharRepeatedUntilUnderscore(p.getSeqLeft())) {
+	                        				count++;
+	                        			}
+	                        			if(Piece.isSingleCharRepeatedUntilUnderscore(p.getSeqBottom())) {
+	                        				count++;
+	                        			}
+	                        			
 	                        		}
                         		   /* for (Map.Entry<String, List<Integer>> poulet : borduresMap.entrySet()) {
                         		    	String signa = poulet.getKey();

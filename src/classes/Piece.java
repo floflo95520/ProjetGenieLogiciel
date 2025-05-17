@@ -198,7 +198,7 @@ public class Piece {
 						    if (hex.length() == 1) String.append('0');
 						    String.append(hex);
 						}
-						if(!t.equals("")) String.append("_"+t);
+						if(!t.equals("")) sTop.append("_"+t);
 						this.top=String.toString();
 						this.seqTop=sTop.toString();
 						break;
@@ -283,7 +283,7 @@ public class Piece {
 						    if (hex.length() == 1) StringR.append('0');
 						    StringR.append(hex);
 						}
-						if(!t1.equals("")) StringR.append("_"+t1);
+						if(!t1.equals("")) sRight.append("_"+t1);
 						this.right=StringR.toString();
 						this.seqRight=sRight.toString();
 						break;
@@ -366,7 +366,7 @@ public class Piece {
 						    if (hex.length() == 1) StringB.append('0');
 						    StringB.append(hex);
 						}
-						if(!t2.equals(""))StringB.append("_"+t2);
+						if(!t2.equals(""))sBottom.append("_"+t2);
 						this.bottom=StringB.toString();
 						this.seqBottom=sBottom.toString();
 						break;
@@ -450,7 +450,7 @@ public class Piece {
 						    if (hex.length() == 1) StringL.append('0');
 						    StringL.append(hex);
 						}
-						if(!t3.equals(""))StringL.append("_"+t3);
+						if(!t3.equals(""))sLeft.append("_"+t3);
 						this.left=StringL.toString();
 						this.seqLeft=sLeft.toString();
 						break;
@@ -482,6 +482,37 @@ public class Piece {
 	public String getBottomSignature() {
 		return this.bottom; 
 	}
+	
+	public String getSeqTop() {
+		return seqTop;
+	}
+	public String getSeqRight() {
+		return seqRight;
+	}
+	public String getSeqLeft() {
+		return seqLeft;
+	}
+	public String getSeqBottom() {
+		return seqBottom;
+	}
+	
+
+	public static boolean isSingleCharRepeatedUntilUnderscore(String str) {
+        if (str == null || str.isEmpty()) return false;
+
+        int underscoreIndex = str.indexOf('_');
+        String segment = (underscoreIndex == -1) ? str : str.substring(0, underscoreIndex);
+
+        if (segment.isEmpty()) return false;
+
+        char firstChar = segment.charAt(0);
+        for (int i = 1; i < segment.length(); i++) {
+            if (segment.charAt(i) != firstChar) {
+                return false;
+            }
+        }
+        return true;
+    }
 	
 	
 	private int[][] imageToMatrix(BufferedImage img){
