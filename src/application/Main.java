@@ -60,7 +60,7 @@ public class Main extends Application {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
-	                                if (nomFichier.endsWith(ext) && fichier.getName().equals("img_3_2.png")) {
+	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
 											Piece piece = new Piece(fichier.getPath(),fichier.getName());
 											pieceList.addPiece(piece);
@@ -85,7 +85,7 @@ public class Main extends Application {
 	                        		System.out.println(key + " -> Pièce n°" + signatureMap.get(key));}
 	                               {
 	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size()); */
-	                        {
+	                        
 	                        		ListePieces pieceCorners=new ListePieces();
 	                        		ListePieces pieceBorders=new ListePieces();
 
@@ -106,10 +106,12 @@ public class Main extends Application {
 	                        			
 	                        			
 	                        			if(count==1) {
-	                        				pieceCorners.addPiece(p);
+	                        				pieceBorders.addPiece(p);
+	                        				pieceList.removePiece(p);
 	                        			}
 	                        			else if(count==2) {
-	                        				pieceBorders.addPiece(p);
+	                        				pieceCorners.addPiece(p);
+	                        				pieceList.removePiece(p);
 	                        			}
 	                        			else if(count>2) {
 	                        				System.out.println(p.getNom());
@@ -118,25 +120,32 @@ public class Main extends Application {
 	                        				System.out.println(p.getSeqLeft());
 	                        				System.out.println(p.getSeqBottom());
 	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
-	                        				System.exit(1);
+	                        				
 	                        			}
 	                        			
 	                        		}
 	                        		
+	                        		HashMap<String, ListePieces> hm= new HashMap<String, ListePieces>();
 	                        		for (Piece p: pieceCorners.getPieces()) {
-	                        			System.out.println(p.getNom());
-	                        			System.out.println(pieceCorners.getNumberOfPieces());
+	                        			hm.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+	                        			
 	                        		}
-	                        		for (Piece p: pieceBorders.getPieces()) {
-	                        			System.out.println(p.getNom());
-	                        			System.out.println(pieceBorders.getNumberOfPieces());
+	                        		for(Piece p: pieceCorners.getPieces()) {
+	                        			hm.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getBottomSignature(),k-> new ListePieces()).addPiece(p);
+	                        			hm.computeIfAbsent(p.getLeftSignature(),k-> new ListePieces()).addPiece(p);
+
 	                        		}
-                        		   /* for (Map.Entry<String, List<Integer>> poulet : borduresMap.entrySet()) {
-                        		    	String signa = poulet.getKey();
-                        		    	Integer pieceInd = poulet.getValue();
-                        		    	
-	                        		}*/
-	                        }
+	                        		
+	                        		ArrayList<Piece> finalList= new ArrayList<>();
+	                        		ArrayList<String> tentatives = new ArrayList<>();
+	                        		Piece p1=pieceCorners.getPieces().removeFirst();
+	                        		p1.setState(true);
+	                        		finalList.add(p1);
 	                        	
 	                       ouvrirFenetrePuzzle(fichiers);
 		                }

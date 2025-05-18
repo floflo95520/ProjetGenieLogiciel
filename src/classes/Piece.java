@@ -531,17 +531,7 @@ public class Piece {
 	            matrix[y][x] = (alpha != 0) ? 1 : 0;
 			}
 		}
-		for (int j=0;j<img.getHeight();j++) {
-			for (int i=0;i<img.getWidth();i++) {
-				
-				if(matrix[j][i]==0) {
-					System.out.println("oui");
-					System.out.println("y="+j);
-				
-				System.out.println("x="+i);
-				System.out.println(matrix[j][i]);}
-			}
-		}
+
 		return matrix;
 	}
 }
