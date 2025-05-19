@@ -1,6 +1,7 @@
 package classes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -108,4 +109,13 @@ public class ListePieces {
     public boolean isEmpty() {
         return pieces.isEmpty();
     }
+
+	public void ResolvePuzzle(HashMap<String, ListePieces> hm, ListePieces finalList, ListePieces pieceCorners, ListePieces pieceBorders ) {
+		if(hm!=null) {
+			Piece p=finalList.getPieces().get(0);
+			if(pieceCorners.containsPiece(p)) {
+				
+			}
+		}
+	}
 }

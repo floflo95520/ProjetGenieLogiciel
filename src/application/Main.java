@@ -141,11 +141,13 @@ public class Main extends Application {
 
 	                        		}
 	                        		
-	                        		ArrayList<Piece> finalList= new ArrayList<>();
+	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
-	                        		Piece p1=pieceCorners.getPieces().removeFirst();
+	                        		Piece p1=pieceCorners.getPieces().getFirst();
 	                        		p1.setState(true);
-	                        		finalList.add(p1);
+	                        		finalList.addPiece(p1);
+	                        		finalList.ResolvePuzzle(hm);
+	                        		
 	                        	
 	                       ouvrirFenetrePuzzle(fichiers);
 		                }
