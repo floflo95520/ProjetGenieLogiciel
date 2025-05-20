@@ -110,12 +110,25 @@ public class ListePieces {
         return pieces.isEmpty();
     }
 
-	public void ResolvePuzzle(HashMap<String, ListePieces> hm, ListePieces finalList, ListePieces pieceCorners, ListePieces pieceBorders ) {
+	public void ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, Piece p1) {
 		if(hm!=null) {
-			Piece p=finalList.getPieces().get(0);
-			if(pieceCorners.containsPiece(p)) {
-				
-			}
+			p1.setState(true);
+    		finalList.addPiece(p1);
+    		String direction=p1.direction()[0];
+    		String Signature = null;
+    		String oppositeDirection=p1.oppositeDirection(direction);
+    		int count=0;
+    		switch(direction) {
+    			case "right":
+    				Signature=p1.getRightSignature();
+    				break;
+    			case "left":
+    				Signature=p1.getLeftSignature();
+    		}
+    		
+    		ListePieces Candidats=hm.get(Signature);
+    		
+    				
 		}
 	}
 }

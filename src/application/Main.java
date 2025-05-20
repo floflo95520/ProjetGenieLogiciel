@@ -80,11 +80,6 @@ public class Main extends Application {
 	                                }
 	                        	}
 	                        }
-	                        	/*System.out.println("Signatures enregistrées :");
-	                        	for (String key : signatureMap.keySet()) {
-	                        		System.out.println(key + " -> Pièce n°" + signatureMap.get(key));}
-	                               {
-	                        		System.out.println("Nombre total de signatures enregistrées : " + signatureMap.size()); */
 	                        
 	                        		ListePieces pieceCorners=new ListePieces();
 	                        		ListePieces pieceBorders=new ListePieces();
@@ -125,14 +120,16 @@ public class Main extends Application {
 	                        			
 	                        		}
 	                        		
+	                        		
 	                        		HashMap<String, ListePieces> hm= new HashMap<String, ListePieces>();
-	                        		for (Piece p: pieceCorners.getPieces()) {
+	                        		for (Piece p: pieceBorders.getPieces()) {
 	                        			hm.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
 	                        			hm.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
 	                        			hm.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
 	                        			hm.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
 	                        			
 	                        		}
+	                        		
 	                        		for(Piece p: pieceCorners.getPieces()) {
 	                        			hm.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
 	                        			hm.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
@@ -141,12 +138,21 @@ public class Main extends Application {
 
 	                        		}
 	                        		
+	                        		for (Map.Entry<String, ListePieces> entry : hm.entrySet()) {
+	                        		    System.out.println("Signature: " + entry.getKey());
+	                        		    System.out.println("Taille de la liste associée : " + entry.getValue().getNumberOfPieces());
+	                        		    for(Piece p: entry.getValue().getPieces()) {
+	                        		    	System.out.println(p.getNom());
+	                        		    }
+	                        		    System.out.println("Taille totale de la HashMap : " + hm.size());
+	                        		    System.out.println();
+	                        		}
+	                        		
+	                        		
 	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
 	                        		Piece p1=pieceCorners.getPieces().getFirst();
-	                        		p1.setState(true);
-	                        		finalList.addPiece(p1);
-	                        		finalList.ResolvePuzzle(hm);
+	                        		finalList.ResolveBorder(hm,finalList,p1);
 	                        		
 	                        	
 	                       ouvrirFenetrePuzzle(fichiers);
@@ -204,7 +210,7 @@ public class Main extends Application {
 	                y2 = tab[2][1];
 	                
 	                imageView.setLayoutX(x - (x1 * ratio));
-	                System.out.println("valeur de x1: " + x1);
+	               // System.out.println("valeur de x1: " + x1);
 	                imageView.setLayoutY(y - (y1 * ratio));
 	                
 	                if(x == 0) {
@@ -222,7 +228,7 @@ public class Main extends Application {
 	                
 	                
 	                
-	                System.out.println("valeur de x" + x + " valeur de y : " + y);
+	              //  System.out.println("valeur de x" + x + " valeur de y : " + y);
 	                
 	                //System.out.println("valeur de x" + x + " valeur de y : " + y);
 	                
