@@ -152,7 +152,16 @@ public class Main extends Application {
 	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
 	                        		Piece p1=pieceCorners.getPieces().getFirst();
-	                        		finalList.ResolveBorder(hm,finalList,p1);
+	                        		p1.setState(true);
+	                        		finalList.addPiece(p1);
+	                        		String direction=p1.direction()[0];
+	                        		int count=1;
+	                        		int l=0,L=0;
+	                        		ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,l,L);
+	                        		for (Piece n:finalList.getPieces()) {
+	                        			System.out.println(n.getNom());
+	                        		}
+	                        		
 	                        		
 	                        	
 	                       ouvrirFenetrePuzzle(fichiers);
@@ -174,6 +183,124 @@ public class Main extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, int count, String direction, ListePieces pieceCorners,ListePieces pieceBorders, int l, int L) {
+		System.out.println(l);
+		System.out.println(L);
+		Piece p1=finalList.getPieces().getLast();
+    		String Signature = null;
+    		String oppositeDirection=p1.oppositeDirection(direction);
+    		if(pieceCorners.containsPiece(p1)) {
+    			count++;
+    			if(l==0 || l==1 || l==2) {
+    				l=count;
+    			}
+    			else if(L==0) {
+    				L=count;
+    			}
+    			count=0;
+    			direction=changeDirection(oppositeDirection,p1);
+    		}
+    		String oppositeDirection1=p1.oppositeDirection(direction);
+    		switch(direction) {
+    			case "right":
+    				Signature=p1.getRightSignature();
+    				break;
+    			case "left":
+    				Signature=p1.getLeftSignature();
+    				break;
+    			case "top":
+    				Signature=p1.getTopSignature();
+    				break;
+    			case "bottom":
+    				Signature=p1.getBottomSignature();
+    				break;
+    			default:
+    				System.out.println("ntm");
+    				break;
+    		}
+    		
+    		ListePieces candidats=hm.get(Signature);
+    		ListePieces candidats1=filterByRightSide(candidats,oppositeDirection1,Signature);
+    		ListePieces candidats2=filterByUsed(candidats1);
+    		
+    		if(candidats2.isEmpty()) {
+    			if(finalList.getPieces().size()== pieceCorners.getPieces().size() + pieceBorders.getPieces().size()) {
+
+    				return true;
+    			}
+    			else {
+    				return false;
+    			}
+    		}
+    		
+    		for (Piece p:candidats2.getPieces()) {
+    			count++;
+    			p.setState(true);
+    			finalList.addPiece(p);
+    			Boolean success=ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,l,L);
+    			if (success) { return true;}
+    			else {
+    				p.setState(false);
+    				finalList.removePiece(p);
+    			}
+    		}
+    		return false;		
+		
+	}
+	
+	private ListePieces filterByRightSide(ListePieces candidats, String oppositeDirection, String signature) {
+		 ListePieces result = new ListePieces();
+
+		    for (Piece p : candidats.getPieces()) {
+
+		        String candidateSignature = null;
+
+		        switch (oppositeDirection) {
+		            case "left":
+		                candidateSignature = p.getLeftSignature();
+		                break;
+		            case "right":
+		                candidateSignature = p.getRightSignature();
+		                break;
+		            case "top":
+		                candidateSignature = p.getTopSignature();
+		                break;
+		            case "bottom":
+		                candidateSignature = p.getBottomSignature();
+		                break;
+		            default:
+		                continue; // Direction non reconnue
+		        }
+		        if (candidateSignature != null && !candidateSignature.isEmpty() && candidateSignature.equals(signature)) {
+		            result.addPiece(p);
+		        }
+	} return result;
+	}
+	
+	private ListePieces filterByUsed(ListePieces candidats) {
+		ListePieces result = new ListePieces();
+		
+		for (Piece p: candidats.getPieces()) {
+			if(!p.getState()) {
+				result.addPiece(p);
+			}
+		}
+		return result;
+	}
+	
+	private String changeDirection(String direction,Piece p1) {
+		if(p1!=null) {
+			String[] directions=p1.direction();
+			for (String s: directions) {
+				if(s!=direction) {
+					return s;
+				}
+			}
+		}
+		return null;
 	}
 	
 	private void ouvrirFenetrePuzzle(File[] fichiers) {
@@ -246,7 +373,7 @@ public class Main extends Application {
 	    puzzleStage.setScene(scene);
 	    puzzleStage.show();
 	}
-
+	
 	
 	public static void main(String[] args) {
 		launch(args);
