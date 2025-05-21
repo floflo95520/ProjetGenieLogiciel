@@ -5,12 +5,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
 import java.util.List;
 
+import classes.Puzzle;
 import classes.ListePieces;
 import classes.Piece;
 
@@ -29,9 +32,9 @@ import javafx.stage.DirectoryChooser;
 
 public class Main extends Application {
 	
-	private ListePieces pieceList = new ListePieces();
+	ListePieces innerList = new ListePieces();
 	
-	private HashMap<String, List<Piece>> signatureMap = new HashMap<>();
+	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -55,7 +58,7 @@ public class Main extends Application {
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
 		                if (fichiers != null) {
-		                	int index = 0;
+		              
 	                        for (File fichier : fichiers) {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
@@ -63,17 +66,12 @@ public class Main extends Application {
 	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
 											Piece piece = new Piece(fichier.getPath(),fichier.getName());
-											pieceList.addPiece(piece);
+											innerList.addPiece(piece);
 											
-											signatureMap.computeIfAbsent(piece.getTopSignature(), k -> new ArrayList<>()).add(piece);
-											signatureMap.computeIfAbsent(piece.getLeftSignature(), k -> new ArrayList<>()).add(piece);
-											signatureMap.computeIfAbsent(piece.getRightSignature(), k -> new ArrayList<>()).add(piece);
-											signatureMap.computeIfAbsent(piece.getBottomSignature(), k -> new ArrayList<>()).add(piece);
-											
-											index++;
+										
 											
 										} catch (Exception e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 	                                	listView.getItems().add(fichier.getName());
@@ -84,7 +82,7 @@ public class Main extends Application {
 	                        		ListePieces pieceCorners=new ListePieces();
 	                        		ListePieces pieceBorders=new ListePieces();
 
-	                        		for (Piece p : pieceList.getPieces()) {
+	                        		for (Piece p : innerList.getPieces()) {
 	                        			int count=0;
 	                        			if(Piece.isSingleCharRepeatedUntilUnderscore(p.getSeqTop())) {
 	                        				count++;
@@ -102,11 +100,11 @@ public class Main extends Application {
 	                        			
 	                        			if(count==1) {
 	                        				pieceBorders.addPiece(p);
-	                        				pieceList.removePiece(p);
+	                        				innerList.removePiece(p);
 	                        			}
 	                        			else if(count==2) {
 	                        				pieceCorners.addPiece(p);
-	                        				pieceList.removePiece(p);
+	                        				innerList.removePiece(p);
 	                        			}
 	                        			else if(count>2) {
 	                        				System.out.println(p.getNom());
@@ -138,7 +136,10 @@ public class Main extends Application {
 
 	                        		}
 	                        		
-	                        		for (Map.Entry<String, ListePieces> entry : hm.entrySet()) {
+	                        	/*	for (Map.Entry<String, ListePieces> entry : hm.entrySet()) {
+	                        			if(entry.getValue().getNumberOfPieces()>2) {
+	                        				
+	                        			
 	                        		    System.out.println("Signature: " + entry.getKey());
 	                        		    System.out.println("Taille de la liste associée : " + entry.getValue().getNumberOfPieces());
 	                        		    for(Piece p: entry.getValue().getPieces()) {
@@ -146,22 +147,107 @@ public class Main extends Application {
 	                        		    }
 	                        		    System.out.println("Taille totale de la HashMap : " + hm.size());
 	                        		    System.out.println();
-	                        		}
+	                        			}
+	                        		}*/
 	                        		
 	                        		
 	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
+	                        		ArrayList<String> directions = new ArrayList<>();
 	                        		Piece p1=pieceCorners.getPieces().getFirst();
 	                        		p1.setState(true);
 	                        		finalList.addPiece(p1);
-	                        		String direction=p1.direction()[0];
+	                        		String direction=p1.directionCorners()[0];
+	                        		directions.add(direction);
 	                        		int count=1;
-	                        		int l=0,L=0;
-	                        		ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,l,L);
-	                        		for (Piece n:finalList.getPieces()) {
+	                        		Puzzle puzzle=new Puzzle();
+	                        		ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,puzzle,directions);
+	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
+	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
+	                        /*		for (Piece n : finalList.getPieces()) {
 	                        			System.out.println(n.getNom());
+	                        		}*/
+	                        		if(piecesNumber!=totalPieces){
+	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
+	                        		}
+	                        	else {
+	                        		
+	                        		
+	                        			puzzle=new Puzzle(puzzle.getl(),puzzle.getL());
+	                        			
+	                        			
+	                        			HashMap<String, ListePieces> signatureMap = new HashMap<>();
+	                        			
+	                        			for (Piece p:innerList.getPieces()) {
+	                        				signatureMap.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+	                        				signatureMap.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+	                        				signatureMap.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+	                        				signatureMap.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+	                        			}
+	                        			
+	                        			
+	                        		/*	for (Map.Entry<String, ListePieces> entry : signatureMap.entrySet()) {
+	                        			    String signature = entry.getKey();
+	                        			    ListePieces liste = entry.getValue();
+
+	                        			    System.out.print("Signature : " + signature + " -> [");
+
+	                        			    List<Piece> pieces = liste.getPieces();
+	                        			    for (int i = 0; i < pieces.size(); i++) {
+	                        			        System.out.print(pieces.get(i).getNom());
+	                        			        if (i < pieces.size() - 1) {
+	                        			            System.out.print(", ");
+	                        			        }
+	                        			    }
+
+	                        			    System.out.println("]");
+	                        			}*/
+
+	                        			System.out.println(signatureMap.size());
+	                        			
+	                        			int w=0;
+	                        			for (int i=0;i<puzzle.getl();i++) {
+	                        				
+	                        				puzzle.setCase(finalList.getPieces().get(w),i,0);
+	                        				w++;
+	                        			}
+
+	                        			for (int j=1;j<puzzle.getL();j++) {
+	                        				puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
+	                        				w++;
+	                        			}
+
+	                        			for (int k=puzzle.getl()-2;k>=0;k--) {
+	                        				puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
+	                        				w++;
+	                        			}
+
+	                        			for (int n=puzzle.getL()-2;n>0;n--) {
+	                        				puzzle.setCase(finalList.getPieces().get(w), 0,n);
+	                        				w++;
+	                        			}
+
+	                        			
+	                        			
+	                        			resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
+	                        			
+	                        		for (int y = 0; y < puzzle.getL(); y++) {
+	                        			    for (int x = 0; x < puzzle.getl(); x++) {
+	                        			    	System.out.println(x);
+	                        			    	System.out.println(y);
+	                        			        Piece p = puzzle.getCase(x, y);
+	                        			        if (p != null) {
+	                        			            System.out.println("[" + x + "," + y + "] = " + p.getNom());
+	                        			        } else {
+	                        			            System.out.println("[" + x + "," + y + "] = null");
+	                        			        }
+	                        			    }
+	                        			}
 	                        		}
 	                        		
+	                        		for(String s: tentatives) {
+	                        			System.out.println(s.toString());
+	                        		}
 	                        		
 	                        	
 	                       ouvrirFenetrePuzzle(fichiers);
@@ -171,7 +257,6 @@ public class Main extends Application {
 	                    }
 		            } else {
 		            	listView.getItems().add("Aucun dossier sélectionné.");
-		                /*System.out.println("Aucun dossier sélectionné.");*/
 		            }
 		        });
 			root.setTop(D);
@@ -186,22 +271,21 @@ public class Main extends Application {
 	}
 	
 	
-	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, int count, String direction, ListePieces pieceCorners,ListePieces pieceBorders, int l, int L) {
-		System.out.println(l);
-		System.out.println(L);
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, int count, String direction, ListePieces pieceCorners,ListePieces pieceBorders, Puzzle dimImg,ArrayList<String> directions) {
 		Piece p1=finalList.getPieces().getLast();
     		String Signature = null;
     		String oppositeDirection=p1.oppositeDirection(direction);
     		if(pieceCorners.containsPiece(p1)) {
     			count++;
-    			if(l==0 || l==1 || l==2) {
-    				l=count;
+    			if(dimImg.getl()==0 || dimImg.getl()==1 || dimImg.getl()==2) {
+    				dimImg.setl(count);
     			}
-    			else if(L==0) {
-    				L=count;
+    			else if(dimImg.getL()==0) {
+    				dimImg.setL(count);
     			}
     			count=0;
     			direction=changeDirection(oppositeDirection,p1);
+    			directions.add(direction);
     		}
     		String oppositeDirection1=p1.oppositeDirection(direction);
     		switch(direction) {
@@ -225,11 +309,46 @@ public class Main extends Application {
     		ListePieces candidats=hm.get(Signature);
     		ListePieces candidats1=filterByRightSide(candidats,oppositeDirection1,Signature);
     		ListePieces candidats2=filterByUsed(candidats1);
+    		//ListePieces candidats3=filterByPixelScore(candidats2);
     		
     		if(candidats2.isEmpty()) {
+    			System.out.println(finalList.getPieces().size());
+    			System.out.println(pieceCorners.getPieces().size());
+    			System.out.println(pieceBorders.getPieces().size());
     			if(finalList.getPieces().size()== pieceCorners.getPieces().size() + pieceBorders.getPieces().size()) {
+    				// Vérifie que la dernière pièce connecte bien à la première
+    		        Piece first = finalList.getPieces().getFirst();
+    		        Piece last = finalList.getPieces().getLast();
+    		        
+    		        String sigLast = null;
+    		        String sigFirst = null;
+    		        String lastDirection=directions.getLast();
+    		        // direction ici est la direction dans laquelle tu AVANÇAIS
+    		        // donc il faut que la direction opposée de last corresponde à celle de first
+    		        switch (lastDirection) {
+    		            case "right":
+    		                sigLast = last.getRightSignature();
+    		                sigFirst = first.getLeftSignature();
+    		                break;
+    		            case "left":
+    		                sigLast = last.getLeftSignature();
+    		                sigFirst = first.getRightSignature();
+    		                break;
+    		            case "top":
+    		                sigLast = last.getTopSignature();
+    		                sigFirst = first.getBottomSignature();
+    		                break;
+    		            case "bottom":
+    		                sigLast = last.getBottomSignature();
+    		                sigFirst = first.getTopSignature();
+    		                break;
+    		        }
 
-    				return true;
+    		        if (sigLast != null && sigLast.equals(sigFirst)) {
+    		            return true;
+    		        } else {
+    		            return false; 
+    		        }
     			}
     			else {
     				return false;
@@ -240,7 +359,7 @@ public class Main extends Application {
     			count++;
     			p.setState(true);
     			finalList.addPiece(p);
-    			Boolean success=ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,l,L);
+    			Boolean success=ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,dimImg,directions);
     			if (success) { return true;}
     			else {
     				p.setState(false);
@@ -293,7 +412,7 @@ public class Main extends Application {
 	
 	private String changeDirection(String direction,Piece p1) {
 		if(p1!=null) {
-			String[] directions=p1.direction();
+			String[] directions=p1.directionCorners();
 			for (String s: directions) {
 				if(s!=direction) {
 					return s;
@@ -303,6 +422,102 @@ public class Main extends Application {
 		return null;
 	}
 	
+	private Boolean resolveInner(Puzzle puzzle, HashMap<String, ListePieces> hm, int y, int x, int ymax, int xmax,ArrayList<String> tentatives) {
+		
+		
+		if (x >= xmax) {
+	        return true; // succès
+	    }
+		
+		if(y>=ymax) {
+			return resolveInner(puzzle,hm,1,x+1,ymax,xmax,tentatives);
+		}
+		 String leftSig = puzzle.getCase(x-1, y).getRightSignature();
+		 String topSig = puzzle.getCase(x, y-1).getBottomSignature();
+		 String bottomSig=null;
+		 String rightSig=null;
+		 if(y+1==ymax) {
+			 bottomSig =puzzle.getCase(x,y+1).getTopSignature();
+		 }
+		 if(x+1==xmax) {
+			 rightSig=puzzle.getCase(x+1, y).getLeftSignature();
+		 }
+		 ListePieces candidats=getCandidatsBySignature(hm,leftSig,topSig,bottomSig,rightSig);
+		 ListePieces filteredCandidates=filterByUsed(candidats);
+		 
+		 for (Piece p:filteredCandidates.getPieces()) {
+			 p.setState(true);
+			 puzzle.setCase(p, x, y);
+			 
+			 if (resolveInner(puzzle, hm, y + 1, x, ymax, xmax,tentatives)) {
+		            return true; // Succès, on remonte
+		        }
+
+
+		        p.setState(false);
+		        puzzle.setCase(null,y, x);
+		 }
+		 
+		tentatives.add("tentative#"+x+y); 
+		return false;
+	}
+	
+	
+	private ListePieces getCandidatsBySignature(HashMap<String, ListePieces> hm, String leftSig, String topSig,
+			String bottomSig,String rightSig) {
+		 	ListePieces left = hm.getOrDefault(leftSig, new ListePieces());
+		    ListePieces top = hm.getOrDefault(topSig, new ListePieces());
+		    ListePieces bottom = bottomSig != null ? hm.getOrDefault(bottomSig, new ListePieces()) : null;
+		    ListePieces right = rightSig != null ? hm.getOrDefault(rightSig, new ListePieces()) : null;
+
+		    Set<Piece> filteredLeft = new HashSet<>();
+		    for (Piece p : left.getPieces()) {
+		        if (p.getLeftSignature() != null && p.getLeftSignature().equals(leftSig)) {
+		            filteredLeft.add(p);
+		        }
+		    }
+
+		    Set<Piece> filteredTop = new HashSet<>();
+		    for (Piece p : top.getPieces()) {
+		        if (p.getTopSignature() != null && p.getTopSignature().equals(topSig)) {
+		            filteredTop.add(p);
+		        }
+		    }
+
+		    Set<Piece> filteredBottom = null;
+		    if (bottom != null) {
+		        filteredBottom = new HashSet<>();
+		        for (Piece p : bottom.getPieces()) {
+		            if (p.getBottomSignature() != null && p.getBottomSignature().equals(bottomSig)) {
+		                filteredBottom.add(p);
+		            }
+		        }
+		    }
+
+		    Set<Piece> filteredRight = null;
+		    if (right != null) {
+		        filteredRight = new HashSet<>();
+		        for (Piece p : right.getPieces()) {
+		            if (p.getRightSignature() != null && p.getRightSignature().equals(rightSig)) {
+		                filteredRight.add(p);
+		            }
+		        }
+		    }
+		    Set<Piece> intersection = new HashSet<>(filteredLeft);
+		    intersection.retainAll(filteredTop);
+		    if (filteredRight != null) intersection.retainAll(filteredRight);
+		    if (filteredBottom != null) intersection.retainAll(filteredBottom);
+
+		    // On retourne une ListePieces contenant les candidats valides
+		    ListePieces result = new ListePieces();
+		    for (Piece p : intersection) {
+		        result.addPiece(p);
+		    }
+
+		    return result;
+	}
+
+
 	private void ouvrirFenetrePuzzle(File[] fichiers) {
 	    Stage puzzleStage = new Stage();
 	    Pane puzzlePane = new Pane();

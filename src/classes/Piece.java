@@ -250,12 +250,12 @@ public class Piece {
 								digest.update("U".getBytes(StandardCharsets.UTF_8));
 								matrix[1][0]=matrix[0][0];
 								matrix[1][1]=matrix[0][1];
+								matrix[0][0]=imageMatrix[y-2][x];
 								if(y>1 && x+1<img.getWidth()) {
-									matrix[0][0]=imageMatrix[y-2][x];
 									matrix[0][1]=imageMatrix[y-2][x+1];
 								}
 								else {
-									matrix[0][0]=0;
+
 									matrix[0][1]=0;
 								}
 								y--;
@@ -285,8 +285,8 @@ public class Piece {
 								matrix[0][0]=matrix[1][0];
 								matrix[0][1]=matrix[1][1];
 								matrix[1][0]=imageMatrix[y+1][x];
-								if(x+1>=img.getWidth()) { matrix[1][1]=0;}
-								else {matrix[1][1]=imageMatrix[y+1][x+1];}
+								if(x+1<img.getWidth()) { matrix[1][1]=imageMatrix[y+1][x+1];}
+								else {matrix[1][1]=0;}
 								y++;
 							}
 						} 
@@ -407,7 +407,7 @@ public class Piece {
 								matrix[0][0]=matrix[0][1];
 								matrix[1][0]=matrix[1][1];
 								matrix[1][1]=imageMatrix[y][x+1];
-								if(y!=0) {
+								if(y>0) {
 									matrix[0][1]=imageMatrix[y-1][x+1];
 								}
 								else {
@@ -421,7 +421,7 @@ public class Piece {
 								matrix[1][0]=matrix[0][0];
 								matrix[1][1]=matrix[0][1];
 								matrix[0][1]=imageMatrix[y-2][x];
-								if(x>0 && y>0) {
+								if(x>0 && y>1) {
 									matrix[0][0]=imageMatrix[y-2][x-1];	
 								}
 								else {
@@ -437,7 +437,7 @@ public class Piece {
 								digest.update("L".getBytes(StandardCharsets.UTF_8));
 								matrix[0][1]=matrix[0][0];
 								matrix[1][1]=matrix[1][0];
-								if(x-2>=0) {
+								if(x>1) {
 									matrix[0][0]=imageMatrix[y-1][x-2];
 									matrix[1][0]=imageMatrix[y][x-2];
 								}
@@ -452,7 +452,7 @@ public class Piece {
 								digest.update("B".getBytes(StandardCharsets.UTF_8));
 								matrix[0][0]=matrix[1][0];
 								matrix[0][1]=matrix[1][1];
-								if(x!=0) {
+								if(x>0) {
 									matrix[1][0]=imageMatrix[y+1][x-1];
 								}
 								else {
@@ -566,7 +566,7 @@ public class Piece {
 		return matrix;
 	}
 	
-	public String[] direction() {
+	public String[] directionCorners() {
 		String[] s=new String[2];
 		if(!isSingleCharRepeatedUntilUnderscore(seqRight)) {
 			s[0]="right";
