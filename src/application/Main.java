@@ -21,12 +21,14 @@ import classes.ListePieces;
 import classes.Piece;
 
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
@@ -248,6 +250,8 @@ public class Main extends Application {
 	                        			
 	                        			resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
 	                        			
+	                        			
+	                        			
 	                        		for (int y = 0; y < puzzle.getL(); y++) {
 	                        			    for (int x = 0; x < puzzle.getl(); x++) {
 	                        			    	System.out.println(x);
@@ -267,7 +271,7 @@ public class Main extends Application {
 	                        		}
 	                        		
 	                        	
-	                       ouvrirFenetrePuzzle(fichiers);
+	                       ouvrirFenetrePuzzle(puzzle);
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
@@ -538,77 +542,86 @@ public class Main extends Application {
 	}
 
 
-	private void ouvrirFenetrePuzzle(File[] fichiers) {
+	private void ouvrirFenetrePuzzle(Puzzle puzzle) {
 	    Stage puzzleStage = new Stage();
 	    Pane puzzlePane = new Pane();
-	    final double TAILLE_CASE = 100;
-	    int i = 0;
-	    int x = 0, y=0, x1, x2, y1=0, y2=0;
+	    //final double TAILLE_CASE = 100;
+	    //int i = 0;
+	    int x = 0, y=0;
 	    double yplus = 0;
-	    int[][] tab;
-	    for (File fichier : fichiers) {
-	        String nomFichier = fichier.getName().toLowerCase();
-	        if (nomFichier.endsWith(".png")) {
-	            try {
-	                // Image et ImageView
-	     
-	                
-	                
-	                double ratio = 0.3; // 30%
+	    int[][] tab2 = Piece.corners(puzzle.getCase(0, 0).getImg());
+        int x3 = tab2[0][0];
+        int x4 = tab2[1][0];
+        int y3 = tab2[0][1];
+        int y4 = tab2[2][1];
+        int TailleX = (x4 - x3) * puzzle.getl();
+        System.out.println(TailleX);
+        int TailleY = (y4 - y3) * puzzle.getL();
+        System.out.println(TailleY);
+        double ratio;
+        if(TailleX > TailleY) {
+        	//puzzle en mode paysage
+        	ratio = 1000 / TailleX;
+        }
+        else {
+        	ratio = 1000 / TailleY;
+        }
+	    for(int i = 0; i < puzzle.getL(); i++) {
+	    	for(int j = 0; j < puzzle.getl(); j++) {
+	    		
+	    		Piece piece = puzzle.getCase(j,i);
 
-	                Image image = new Image(fichier.toURI().toString());
-	                ImageView imageView = new ImageView(image);
+	    		
+	    		//double ratio = 0.3;
+	    		if (piece == null || piece.getImg() == null) continue;
+	    		
+	    		try {
+	    			
+	    			BufferedImage bufferedImage = piece.getImg();
+	    			WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+	                ImageView imageView = new ImageView(fxImage);
+	                
+					imageView.setFitWidth(fxImage.getWidth() * ratio);
+	                imageView.setFitHeight(fxImage.getHeight() * ratio);
+	                imageView.setPreserveRatio(false);
+	    			
+	             // Récupération des coins de la piece
+	                int[][] tab = Piece.corners(bufferedImage);
+	                int x1 = tab[0][0];
+	                int x2 = tab[1][0];
+	                int y1 = tab[0][1];
+	                int y2 = tab[2][1];
 
-	                imageView.setFitWidth(image.getWidth() * ratio);
-	                imageView.setFitHeight(image.getHeight() * ratio);
-	                imageView.setPreserveRatio(false); // car tu définis toi-même les 2
-	                
-	                BufferedImage bufferedImage = ImageIO.read(fichier);
-	                tab = Piece.corners(bufferedImage);
-	                x1 = tab[0][0];
-	                x2 = tab[1][0];
-	                
-	                y1 = tab[0][1];
-	                y2 = tab[2][1];
-	                
+	                // Positionnement
 	                imageView.setLayoutX(x - (x1 * ratio));
-	               // System.out.println("valeur de x1: " + x1);
 	                imageView.setLayoutY(y - (y1 * ratio));
-	                
-	                if(x == 0) {
-	                	yplus = (y2 - y1) * ratio;
-	                }
-	                
-	                x += (x2 - x1) * ratio;
-	                
-	                if(x + ((x2 - x1 ) * ratio ) >= 700) {
-	                	x = 0;
-	                	y += yplus;
-	                }
-	                
-	                
-	                
-	                
-	                
-	              //  System.out.println("valeur de x" + x + " valeur de y : " + y);
-	                
-	                //System.out.println("valeur de x" + x + " valeur de y : " + y);
-	                
-	                puzzlePane.getChildren().add(imageView);
-	               
 
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
-	        }
+	                if (j == 0) {
+	                    yplus = (y2 - y1) * ratio;
+	                }
+
+	                x += (x2 - x1) * ratio;
+
+	                if (j == 0 && i != 0) {
+	                    x = 0;
+	                    y += yplus;
+	                }
+
+	                puzzlePane.getChildren().add(imageView);
+	                
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+	    		
+	    		
+	    	}
 	    }
-	
-	    Scene scene = new Scene(puzzlePane, 800, 800);
-	    puzzleStage.setTitle("Puzzle Assemblé");
+	    Scene scene = new Scene(puzzlePane, TailleX * ratio, TailleY * ratio);
 	    puzzleStage.setScene(scene);
+	    puzzleStage.setTitle("Puzzle");
 	    puzzleStage.show();
 	}
-	
+	   
 	
 	public static void main(String[] args) {
 		launch(args);

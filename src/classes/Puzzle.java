@@ -1,7 +1,7 @@
 package classes;
 
 public class Puzzle {
-		Piece[][] puzzle;
+		public Piece[][] puzzle;
 		private int l;
 		private int L;
 		

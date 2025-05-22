@@ -16,7 +16,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 public class Piece {
-	private static BufferedImage img;
+	private BufferedImage img;
 	private String nom;
 
     private String top;
@@ -38,8 +38,8 @@ public class Piece {
 	
 	public Piece(String imagePath,String nom) throws Exception {
         try {
-            Piece.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
-            int[][] tab=corners(Piece.img);
+            this.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
+            int[][] tab=corners(this.img);
             this.nom=nom;
             this.corners=tab;
            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
