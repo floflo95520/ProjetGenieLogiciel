@@ -1,12 +1,19 @@
 package classes;
 
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class Piece {
 	private static BufferedImage img;
@@ -22,7 +29,8 @@ public class Piece {
     private String seqRight;
     private boolean used;
     private int count;
-
+    private int rotation;
+    private int[][] corners;
 	public String getNom() {
         return nom;
     }
@@ -33,13 +41,13 @@ public class Piece {
             Piece.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
             int[][] tab=corners(Piece.img);
             this.nom=nom;
-
+            this.corners=tab;
            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
            setSide("right",tab[1][0],tab[1][1],tab[3][0],tab[3][1]);
            setSide("bottom",tab[2][0],tab[2][1],tab[3][0],tab[3][1]);
            setSide("left",tab[0][0],tab[0][1],tab[2][0],tab[2][1]); 
            count=0;
-           
+           rotation=0;
            if(isSingleCharRepeatedUntilUnderscore(seqTop)) {
         	   count++;
         	   top=null;
@@ -482,7 +490,9 @@ public class Piece {
 	}
 }
 	
-	
+	public int getCount() {
+		return this.count;
+	}
 	public Boolean getState() {
 		return this.used;
 	}
@@ -601,4 +611,74 @@ public class Piece {
 		}
 	}
 	
+	public void rotate90(File input,File output,String name) throws Exception {
+	    rotation = (rotation + 90) % 360;
+
+	    if (img != null) {
+	        img = rotate90CounterClockwise(input,output);
+	        nom=name;
+	        this.corners = corners(img);
+	        for(int i=0;i<4;i++){
+	        	for(int j=0;j<2;j++){
+	        		System.out.println(corners[i][j]);// vérifie que corners() retourne bien [4][2]
+	        	}
+	        }
+
+	        setSide("top",    corners[0][0], corners[0][1], corners[1][0], corners[1][1]);
+	        setSide("right",  corners[1][0], corners[1][1], corners[3][0], corners[3][1]);
+	        setSide("bottom", corners[2][0], corners[2][1], corners[3][0], corners[3][1]);
+	        setSide("left",   corners[0][0], corners[0][1], corners[2][0], corners[2][1]);
+	        System.out.println(nom);
+	        System.out.println(top);
+	        System.out.println(right);
+	        System.out.println(bottom);
+	        System.out.println(left);
+
+	        // Nettoyage des signatures si bord vide
+	        if (isSingleCharRepeatedUntilUnderscore(seqTop))    top = null;
+	        if (isSingleCharRepeatedUntilUnderscore(seqRight))  right = null;
+	        if (isSingleCharRepeatedUntilUnderscore(seqBottom)) bottom = null;
+	        if (isSingleCharRepeatedUntilUnderscore(seqLeft))   left = null;
+	    }
+	}
+
+	public static BufferedImage rotate90CounterClockwise(File input,File output) throws IOException {
+		 // Chargement de l'image
+        ImageInputStream iis = ImageIO.createImageInputStream(input);
+        Iterator<ImageReader> iterator =ImageIO.getImageReaders(iis);
+        ImageReader reader= iterator.next();
+        String format = reader.getFormatName();
+        
+        BufferedImage image=ImageIO.read(iis);
+        
+        int width=image.getWidth();
+        int height=image.getHeight();
+        
+        BufferedImage rotated = new BufferedImage(height,width,image.getType());
+
+        for (int y=0; y<height;y++) {
+        	for(int x=0;x<width;x++) {
+        		rotated.setRGB(y, (width-1)-x, image.getRGB(x, y));
+        	}
+        }
+        ImageIO.write(rotated, format, output);
+		return rotated;
+	}
+
+
+
+
+    public int getRotation() {
+        return rotation;
+    }
+
+
+
+	public int[][] getCorners() {
+		return corners;
+	}
+	
+	public BufferedImage getImg() {
+		return this.img;
+	}
 }
