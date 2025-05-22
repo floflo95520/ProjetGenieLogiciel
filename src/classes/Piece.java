@@ -614,10 +614,10 @@ public class Piece {
 	public void rotate90(File input,File output,String name) throws Exception {
 	    rotation = (rotation + 90) % 360;
 
-	    if (img != null) {
-	        img = rotate90CounterClockwise(input,output);
+	    if (this.img != null) {
+	        this.img = rotate90CounterClockwise(input,output);
 	        nom=name;
-	        this.corners = corners(img);
+	        this.corners = corners(this.img);
 	        for(int i=0;i<4;i++){
 	        	for(int j=0;j<2;j++){
 	        		System.out.println(corners[i][j]);// vérifie que corners() retourne bien [4][2]
@@ -629,10 +629,10 @@ public class Piece {
 	        setSide("bottom", corners[2][0], corners[2][1], corners[3][0], corners[3][1]);
 	        setSide("left",   corners[0][0], corners[0][1], corners[2][0], corners[2][1]);
 	        System.out.println(nom);
-	        System.out.println(top);
-	        System.out.println(right);
-	        System.out.println(bottom);
-	        System.out.println(left);
+	        System.out.println(seqTop);
+	        System.out.println(seqRight);
+	        System.out.println(seqBottom);
+	        System.out.println(seqLeft);
 
 	        // Nettoyage des signatures si bord vide
 	        if (isSingleCharRepeatedUntilUnderscore(seqTop))    top = null;
