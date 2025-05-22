@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -16,17 +17,26 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 public class Piece {
+
 	private BufferedImage img;
+
+	
+	private File fichier;
+
 	private String nom;
 
     private String top;
     private String seqTop;
+    private ArrayList<int[]> topScore;
     private String bottom;
     private String seqBottom;
+    private ArrayList<int[]> bottomScore;
     private String left;
     private String seqLeft;
+    private ArrayList<int[]> leftScore;
     private String right;
     private String seqRight;
+    private ArrayList<int[]> rightScore;
     private boolean used;
     private int count;
     private int rotation;
@@ -36,10 +46,18 @@ public class Piece {
     }
 
 	
-	public Piece(String imagePath,String nom) throws Exception {
+	public Piece(File fichier,String nom) throws Exception {
         try {
-            this.img = ImageIO.read(new File(imagePath));  // Charge l'image à partir d'un fichier
+
+
+        	this.fichier=fichier;
+            this.img = ImageIO.read(new File(fichier.getPath()));  // Charge l'image à partir d'un fichier
+            topScore=new ArrayList<>();
+            rightScore=new ArrayList<>();
+            bottomScore=new ArrayList<>();
+            leftScore=new ArrayList<>();
             int[][] tab=corners(this.img);
+
             this.nom=nom;
             this.corners=tab;
            setSide("top",tab[0][0],tab[0][1],tab[1][0],tab[1][1]);
@@ -137,7 +155,7 @@ public class Piece {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				switch(side) {
 					case "top":
-
+						seqTop=null;
 						String t="";
 						StringBuilder sTop=new StringBuilder();
 						matrix[0][0]=0;
@@ -147,7 +165,34 @@ public class Piece {
 						
 						
 						while(x<x1) {
-
+							if(matrix[1][1]>0) {
+								int rgb=img.getRGB(x, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								topScore.add(new int[]{r,g,b});
+							}
+							if(matrix[1][0]>0) {
+								int rgb=img.getRGB(x-1, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								topScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][1]>0) {
+								int rgb=img.getRGB(x, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								topScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][0]>0){
+								int rgb=img.getRGB(x-1, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								topScore.add(new int[]{r,g,b});
+							}
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								sTop.append("R");
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
@@ -225,6 +270,7 @@ public class Piece {
 						this.seqTop=sTop.toString();
 						break;
 					case "right":
+						seqRight="";
 						String t1="";
 						StringBuilder sRight=new StringBuilder();
 						matrix[0][0]=0;
@@ -233,7 +279,34 @@ public class Piece {
 						matrix[1][1]=0;
 						
 						while(y<y1) {
-
+							if(matrix[1][1]>0) {
+								int rgb=img.getRGB(x+1, y); 
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								rightScore.add(new int[]{r,g,b});
+							}
+							if(matrix[1][0]>0) {
+								int rgb=img.getRGB(x, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								rightScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][1]>0) {
+								int rgb=img.getRGB(x+1, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								rightScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][0]>0) {
+								int rgb=img.getRGB(x, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								rightScore.add(new int[]{r,g,b});
+							}
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								if(t1.equals("")) {
 									t1="1";
@@ -310,7 +383,7 @@ public class Piece {
 						this.seqRight=sRight.toString();
 						break;
 					case "bottom":
-
+						seqBottom="";
 						String t2="";
 						StringBuilder sBottom=new StringBuilder();
 						matrix[0][0]=0;
@@ -318,6 +391,34 @@ public class Piece {
 						matrix[1][0]=0;
 						matrix[1][1]=0;
 						while(x<x1) {
+							if(matrix[1][1]==1) {
+								int rgb=img.getRGB(x, y+1); 
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								bottomScore.add(new int[]{r,g,b});
+							}
+							if(matrix[1][0]==1) {
+								int rgb=img.getRGB(x-1, y+1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								bottomScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][1]==1) {
+								int rgb=img.getRGB(x, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								bottomScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][0]==1) {
+								int rgb=img.getRGB(x-1, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								bottomScore.add(new int[]{r,g,b});
+							}
 							if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==0 && matrix[0][1]==1)) {
 								sBottom.append("R");
 								digest.update("R".getBytes(StandardCharsets.UTF_8));
@@ -398,6 +499,7 @@ public class Piece {
 						this.seqBottom=sBottom.toString();
 						break;
 					case "left":
+						seqLeft="";
 				        String t3="";
 						StringBuilder sLeft=new StringBuilder();
 						matrix[0][0]=0;
@@ -406,6 +508,34 @@ public class Piece {
 						matrix[1][1]=imageMatrix[y][x];
 						
 						while(y<y1) {
+							if(matrix[1][1]>0) {
+								int rgb=img.getRGB(x, y); 
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								leftScore.add(new int[]{r,g,b});
+							}
+							if(matrix[1][0]>0) {
+								int rgb=img.getRGB(x-1, y);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								leftScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][1]>0) {
+								int rgb=img.getRGB(x, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								leftScore.add(new int[]{r,g,b});
+							}
+							if(matrix[0][0]>0) {
+								int rgb=img.getRGB(x-1, y-1);
+								int r=(rgb >> 16) & 0xff;
+								int g=(rgb >> 8) & 0xff;
+								int b=(rgb) & 0xff;
+								leftScore.add(new int[]{r,g,b});
+							}
 							if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==0 && matrix[0][1]==1)) {
 								if(t3.equals("")) {
 									t3="0";
@@ -623,22 +753,21 @@ public class Piece {
 	        		System.out.println(corners[i][j]);// vérifie que corners() retourne bien [4][2]
 	        	}
 	        }
-
+	        top=null;
+	        right=null;
+	        bottom=null;
+	        left=null;
 	        setSide("top",    corners[0][0], corners[0][1], corners[1][0], corners[1][1]);
 	        setSide("right",  corners[1][0], corners[1][1], corners[3][0], corners[3][1]);
 	        setSide("bottom", corners[2][0], corners[2][1], corners[3][0], corners[3][1]);
 	        setSide("left",   corners[0][0], corners[0][1], corners[2][0], corners[2][1]);
-	        System.out.println(nom);
-	        System.out.println(seqTop);
-	        System.out.println(seqRight);
-	        System.out.println(seqBottom);
-	        System.out.println(seqLeft);
-
-	        // Nettoyage des signatures si bord vide
 	        if (isSingleCharRepeatedUntilUnderscore(seqTop))    top = null;
 	        if (isSingleCharRepeatedUntilUnderscore(seqRight))  right = null;
 	        if (isSingleCharRepeatedUntilUnderscore(seqBottom)) bottom = null;
 	        if (isSingleCharRepeatedUntilUnderscore(seqLeft))   left = null;
+
+	        // Nettoyage des signatures si bord vide
+
 	    }
 	}
 
@@ -679,6 +808,31 @@ public class Piece {
 	}
 	
 	public BufferedImage getImg() {
-		return this.img;
+		return img;
+	}
+
+
+	public File getFichier() {
+		return fichier;
+	}
+
+
+	public ArrayList<int[]> getTopScore() {
+		return topScore;
+	}
+
+
+	public ArrayList<int[]> getBottomScore() {
+		return bottomScore;
+	}
+
+
+	public ArrayList<int[]> getLeftScore() {
+		return leftScore;
+	}
+
+
+	public ArrayList<int[]> getRightScore() {
+		return rightScore;
 	}
 }

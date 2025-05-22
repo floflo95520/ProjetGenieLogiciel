@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -62,33 +63,21 @@ public class Main extends Application {
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
 		                if (fichiers != null) {
-
+		                	int l=0;
 	                        for (File fichier : fichiers) {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
-	                                if (nomFichier.endsWith(ext)) {
+	                                if (nomFichier.endsWith(ext) && (l==0 || l==1 || l==2 || l==3)) {
 	                                	try {
-	                                			                             /* 		String parent = fichier.getParent(); // "/home/user/images"
+	                                	//	l++;
+	                                	String parent = fichier.getParent(); // "/home/user/images"
 	                                		String name = fichier.getName();     // "photo.png"
 	                                		String baseName = name.substring(0, name.lastIndexOf(".")); // "photo"
 	                                		String extension = name.substring(name.lastIndexOf("."));   // ".png"
-	                                		*/
-											Piece piece = new Piece(fichier.getPath(),fichier.getName());
-										/*	System.out.println(piece.getNom());
-											System.out.println(piece.getSeqTop());
-											System.out.println(piece.getSeqRight());
-											System.out.println(piece.getSeqBottom());
-											System.out.println(piece.getSeqLeft());
-											Piece piece90 = new Piece(fichier.getPath(),fichier.getName());
-											File f90 = new File(parent, baseName + "90" + extension);
-											piece90.rotate90(fichier, f90, f90.getName());
-											Piece piece180 = new Piece(fichier.getPath(),fichier.getName());
-											File f180 = new File(parent, baseName + "180" + extension);
-											piece90.rotate90(f90, f180, f180.getName());
-											File f270 = new File(parent, baseName + "270" + extension);
-											Piece piece270 = new Piece(fichier.getPath(),fichier.getName());
-											piece90.rotate90(f180, f270, f270.getName());*/
+	                                		
+											Piece piece = new Piece(fichier,fichier.getName());
+
 											
 											
 											innerList.addPiece(piece);
@@ -178,9 +167,6 @@ public class Main extends Application {
 	                        		int count=1;
 	                        		Puzzle puzzle=new Puzzle();
 	                        		ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,puzzle,directions);
-	                        		for (Piece n:finalList.getPieces()) {
-	                        			System.out.println(n.getNom());
-	                        		}
 	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
 	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
 	                        /*		for (Piece n : finalList.getPieces()) {
@@ -189,7 +175,9 @@ public class Main extends Application {
 	                        		if(piecesNumber!=totalPieces){
 	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
 	                        		}
-	                        	else {
+	                        		
+	                        		else {
+	                        	
 	                        		
 	                        		
 	                        			puzzle=new Puzzle(puzzle.getl(),puzzle.getL());
@@ -227,31 +215,29 @@ public class Main extends Application {
 	                        			int w=0;
 	                        			for (int i=0;i<puzzle.getl();i++) {
 	                        				
-	                        				puzzle.setCase(finalList.getPieces().get(w),i,0);
+	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w),i,0);
 	                        				w++;
 	                        			}
 
 	                        			for (int j=1;j<puzzle.getL();j++) {
-	                        				puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
+	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
 	                        				w++;
 	                        			}
 
 	                        			for (int k=puzzle.getl()-2;k>=0;k--) {
-	                        				puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
+	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
 	                        				w++;
 	                        			}
 
 	                        			for (int n=puzzle.getL()-2;n>0;n--) {
-	                        				puzzle.setCase(finalList.getPieces().get(w), 0,n);
+	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), 0,n);
 	                        				w++;
 	                        			}
 
 	                        			
 	                        			
 	                        			resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
-	                        			
-	                        			
-	                        			
+	                    			
 	                        		for (int y = 0; y < puzzle.getL(); y++) {
 	                        			    for (int x = 0; x < puzzle.getl(); x++) {
 	                        			    	System.out.println(x);
@@ -264,14 +250,15 @@ public class Main extends Application {
 	                        			        }
 	                        			    }
 	                        			}
-	                        		}
+	                        		
 	                        		
 	                        		for(String s: tentatives) {
 	                        			System.out.println(s.toString());
 	                        		}
-	                        		
+	                        		ouvrirFenetrePuzzle(puzzle);
+	                        		}
 	                        	
-	                       ouvrirFenetrePuzzle(puzzle);
+	                       
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
@@ -323,16 +310,22 @@ public class Main extends Application {
     				Signature=p1.getBottomSignature();
     				break;
     			default:
-    				System.out.println("ntm");
+    				System.out.println("Direction non reconnue");
     				break;
     		}
     		
     		ListePieces candidats=hm.get(Signature);
-    		for (Piece n : candidats.getPieces()) {
-    			System.out.println(n.getNom());
-    		}
     		ListePieces candidats1=filterByRightSide(candidats, oppositeDirection1, Signature);
     		ListePieces candidats2=filterByUsed(candidats1);
+    		System.out.println("Candidats pour :"+p1.getNom());
+    		for(Piece p: candidats.getPieces()) {
+    			System.out.println(p.getNom());
+    		}
+    		
+    	if(candidats2.getPieces().size()>1) {
+    			TreeMap<Double, Piece> scoreMap = new TreeMap<>();
+    			candidats2.sortByPixelScoreDifference(p1,direction);
+    		}
     		
     		
     		if(candidats2.isEmpty()) {
@@ -386,6 +379,7 @@ public class Main extends Application {
     			Boolean success=ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,dimImg,directions);
     			if (success) { return true;}
     			else {
+    				if(count<0)count--;
     				p.setState(false);
     				finalList.removePiece(p);
     			}
@@ -445,6 +439,7 @@ public class Main extends Application {
 		}
 		return null;
 	}
+	
 	
 	private Boolean resolveInner(Puzzle puzzle, HashMap<String, ListePieces> hm, int y, int x, int ymax, int xmax,ArrayList<String> tentatives) {
 		
@@ -627,7 +622,7 @@ public class Main extends Application {
 	    puzzleStage.setTitle("Puzzle");
 	    puzzleStage.show();
 	}
-	   
+	
 	
 	public static void main(String[] args) {
 		launch(args);

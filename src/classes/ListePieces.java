@@ -3,6 +3,7 @@ package classes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Classe qui gère une collection de pièces de puzzle
@@ -108,6 +109,98 @@ public class ListePieces {
      */
     public boolean isEmpty() {
         return pieces.isEmpty();
+    }
+
+    public void sortByPixelScoreDifference(Piece p1, String direction) {
+        TreeMap<Double, Piece> scoreMap = new TreeMap<>();
+
+        for (Piece other : this.pieces) {
+           double diff = scoreDifference(p1, other, direction);
+           System.out.println("score entre : "+p1.getNom()+ " et " + other.getNom());
+            System.out.println(diff);
+            // arrondir la différence à 2 décimales pour éviter les doublons imprécis
+            diff = Math.round(diff * 100.0) / 100.0;
+            // Si plusieurs pièces ont la même diff, garde la première rencontrée
+            scoreMap.putIfAbsent(diff, other);
+        }
+
+        this.pieces = new ArrayList<>(scoreMap.values());
+    }
+    
+    private double scoreDifference(Piece p1, Piece other, String direction) {
+        switch (direction) {
+            case "top":
+                ArrayList<int[]> tab1=p1.getTopScore();
+                ArrayList<int[]> tab2=other.getBottomScore();
+                double score=0;
+                int size = Math.min(tab1.size(), tab2.size()); // Pour éviter IndexOutOfBounds
+
+                for (int i = 0; i < size; i++) {
+                    int[] rgb1 = tab1.get(i); // [r, g, b]
+                    int[] rgb2 = tab2.get(i); // [r1, g1, b1]
+
+                    int diffR = Math.abs(rgb1[0] - rgb2[0]);
+                    int diffG = Math.abs(rgb1[1] - rgb2[1]);
+                    int diffB = Math.abs(rgb1[2] - rgb2[2]);
+                    
+                
+                    score += diffR + diffG + diffB;
+                }
+                return score;
+		case "bottom":
+            	ArrayList<int[]> tab1B=p1.getTopScore();
+                ArrayList<int[]> tab2B=other.getBottomScore();
+                double scoreB=0;
+                int sizeB = Math.min(tab1B.size(), tab2B.size()); // Pour éviter IndexOutOfBounds
+
+                for (int i = 0; i < sizeB; i++) {
+                    int[] rgb1 = tab1B.get(i); // [r, g, b]
+                    int[] rgb2 = tab2B.get(i); // [r1, g1, b1]
+
+                    int diffR = Math.abs(rgb1[0] - rgb2[0]);
+                    int diffG = Math.abs(rgb1[1] - rgb2[1]);
+                    int diffB = Math.abs(rgb1[2] - rgb2[2]);
+                
+                    scoreB += diffR + diffG + diffB;
+                }
+                return scoreB;
+            case "left":
+            	ArrayList<int[]> tab1L=p1.getTopScore();
+                ArrayList<int[]> tab2L=other.getBottomScore();
+                double scoreL=0;
+                int sizeL = Math.min(tab1L.size(), tab2L.size()); // Pour éviter IndexOutOfBounds
+
+                for (int i = 0; i < sizeL; i++) {
+                    int[] rgb1 = tab1L.get(i); // [r, g, b]
+                    int[] rgb2 = tab2L.get(i); // [r1, g1, b1]
+
+                    int diffR = Math.abs(rgb1[0] - rgb2[0]);
+                    int diffG = Math.abs(rgb1[1] - rgb2[1]);
+                    int diffB = Math.abs(rgb1[2] - rgb2[2]);
+                
+                    scoreL += diffR + diffG + diffB;
+                }
+                return scoreL;
+            case "right":
+            	ArrayList<int[]> tab1R=p1.getTopScore();
+                ArrayList<int[]> tab2R=other.getBottomScore();
+                double scoreR=0;
+                int sizeR = Math.min(tab1R.size(), tab2R.size()); // Pour éviter IndexOutOfBounds
+
+                for (int i = 0; i < sizeR; i++) {
+                    int[] rgb1 = tab1R.get(i); // [r, g, b]
+                    int[] rgb2 = tab2R.get(i); // [r1, g1, b1]
+
+                    int diffR = Math.abs(rgb1[0] - rgb2[0]);
+                    int diffG = Math.abs(rgb1[1] - rgb2[1]);
+                    int diffB = Math.abs(rgb1[2] - rgb2[2]);
+                
+                    scoreR += diffR + diffG + diffB;
+                }
+                return scoreR;
+            default:
+                throw new IllegalArgumentException("Direction inconnue : " + direction);
+        }
     }
 
 	
