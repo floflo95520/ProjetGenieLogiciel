@@ -554,6 +554,7 @@ public class Main extends Application {
         int x4 = tab2[1][0];
         int y3 = tab2[0][1];
         int y4 = tab2[2][1];
+        System.out.println("x2: " + tab2[1][0]);
         int TailleX = (x4 - x3) * puzzle.getl();
         System.out.println(TailleX);
         int TailleY = (y4 - y3) * puzzle.getL();
@@ -561,11 +562,14 @@ public class Main extends Application {
         double ratio;
         if(TailleX > TailleY) {
         	//puzzle en mode paysage
-        	ratio = 1000 / TailleX;
+        	ratio = 1000.0 / TailleX;
+        	System.out.println(ratio);
         }
         else {
-        	ratio = 1000 / TailleY;
+        	ratio = 1000.0 / TailleY;
         }
+        
+        System.out.println("ratio: " + ratio);
 	    for(int i = 0; i < puzzle.getL(); i++) {
 	    	for(int j = 0; j < puzzle.getl(); j++) {
 	    		
@@ -602,7 +606,7 @@ public class Main extends Application {
 
 	                x += (x2 - x1) * ratio;
 
-	                if (j == 0 && i != 0) {
+	                if (j == puzzle.getl() - 1) {
 	                    x = 0;
 	                    y += yplus;
 	                }
@@ -616,7 +620,9 @@ public class Main extends Application {
 	    		
 	    	}
 	    }
-	    Scene scene = new Scene(puzzlePane, TailleX * ratio, TailleY * ratio);
+	    
+	    System.out.println("tailleX " + TailleX + "tailleY" + TailleY + "ratio: " +ratio);
+	    Scene scene = new Scene(puzzlePane, TailleX * ratio + 100, TailleY * ratio + 100);
 	    puzzleStage.setScene(scene);
 	    puzzleStage.setTitle("Puzzle");
 	    puzzleStage.show();
