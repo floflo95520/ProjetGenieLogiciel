@@ -116,8 +116,6 @@ public class ListePieces {
 
         for (Piece other : this.pieces) {
             double diff = scoreDifference(p1, other, direction);
-            System.out.println("score entre : " + p1.getNom() + " et " + other.getNom());
-            System.out.println(diff);
             
             // arrondir la différence à 2 décimales
             diff = Math.round(diff * 100.0) / 100.0;
