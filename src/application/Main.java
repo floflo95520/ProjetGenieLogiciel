@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.imageio.ImageIO;
 import classes.Puzzle;
 import classes.ListePieces;
@@ -42,6 +45,9 @@ import javafx.stage.Screen;
 public class Main extends Application {
 	
 	ListePieces innerList = new ListePieces();
+	ListePieces innerList90 = new ListePieces();
+	ListePieces innerList180= new ListePieces();
+	ListePieces innerList270= new ListePieces();
 
 	
 	@Override
@@ -253,6 +259,345 @@ public class Main extends Application {
 		            }
 		            	else if(nomDossier.endsWith("_rotate")) {
 		            		
+		            		
+
+
+		    				File[] fichiers = dossier.listFiles();
+		    		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
+		    		                if (fichiers != null) {
+		    		                	
+		    	                        for (File fichier : fichiers) {
+		    	                        	String nomFichier = fichier.getName().toLowerCase();
+		    	                        	for (String ext : imageExtensions) {
+		    	                        		
+		    	                                if (nomFichier.endsWith(ext)) {
+		    	                                	try {
+		    	                                		String parent = fichier.getParent(); 
+		    	                                		String name = fichier.getName();     
+		    	                                		String baseName = name.substring(0, name.lastIndexOf(".")); 
+		    	                                		String extension = name.substring(name.lastIndexOf("."));   
+		    	                                		
+		    											Piece piece = new Piece(fichier,fichier.getName());
+		    											Piece piece90 = new Piece(fichier,fichier.getName());
+		    											File f90= new File(parent, baseName + "90" + extension);
+		    											piece90.rotate90(fichier,f90,f90.getName());
+		    		    								Piece piece180 = new Piece(fichier,fichier.getName());
+		    		    								File f180= new File(parent, baseName + "180" + extension);
+		    		    								piece180.rotate90(f90, f180,f180.getName());
+		    		    								Piece piece270 = new Piece(fichier,fichier.getName());
+		    		    								File f270= new File(parent, baseName + "270" + extension);
+		    		    								piece270.rotate90(f180,f270,f270.getName());
+		    		    								
+		    											innerList.addPiece(piece);
+
+		    											innerList90.addPiece(piece90);
+
+		    											innerList180.addPiece(piece180);
+
+		    											innerList270.addPiece(piece270);
+
+		    										
+		    										
+		    											
+		    										} catch (Exception e1) {
+		    											
+		    											e1.printStackTrace();
+		    										}
+		    	                                	listView.getItems().add(fichier.getName());
+		    	                                }
+		    	                        	}
+		    	                        }
+		    	                        
+		    	                        		ListePieces pieceCorners=new ListePieces();
+		    	                        		ListePieces pieceBorders=new ListePieces();
+		    	                        		ListePieces pieceCorners90=new ListePieces();
+		    	                        		ListePieces pieceBorders90=new ListePieces();
+		    	                        		ListePieces pieceCorners180=new ListePieces();
+		    	                        		ListePieces pieceBorders180=new ListePieces();
+		    	                        		ListePieces pieceCorners270=new ListePieces();
+		    	                        		ListePieces pieceBorders270=new ListePieces();
+		    	                        		
+
+		    	                        		for (Piece p : innerList.getPieces()) {
+		    	                        			
+		    	                        			
+		    	                        			if(p.getCount()==1) {
+		    	                        				pieceBorders.addPiece(p);
+		    	                        				innerList.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()==2) {
+		    	                        				pieceCorners.addPiece(p);
+		    	                        				innerList.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()>2) {
+		    	                        				System.out.println(p.getNom());
+		    	                        				System.out.println(p.getSeqTop());
+		    	                        				System.out.println(p.getSeqRight());
+		    	                        				System.out.println(p.getSeqLeft());
+		    	                        				System.out.println(p.getSeqBottom());
+		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				
+		    	                        			}
+		    	                        			
+		    	                        		}
+		    	                        		for (Piece p : innerList90.getPieces()) {
+		    	                        			
+		    	                        			
+		    	                        			if(p.getCount()==1) {
+		    	                        				pieceBorders90.addPiece(p);
+		    	                        				innerList90.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()==2) {
+		    	                        				pieceCorners90.addPiece(p);
+		    	                        				innerList90.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()>2) {
+		    	                        				System.out.println(p.getNom());
+		    	                        				System.out.println(p.getSeqTop());
+		    	                        				System.out.println(p.getSeqRight());
+		    	                        				System.out.println(p.getSeqLeft());
+		    	                        				System.out.println(p.getSeqBottom());
+		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				
+		    	                        			}
+		    	                        			
+		    	                        		}
+		    	                        		for (Piece p : innerList180.getPieces()) {
+		    	                        			
+		    	                        			
+		    	                        			if(p.getCount()==1) {
+		    	                        				pieceBorders180.addPiece(p);
+		    	                        				innerList180.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()==2) {
+		    	                        				pieceCorners180.addPiece(p);
+		    	                        				innerList180.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()>2) {
+		    	                        				System.out.println(p.getNom());
+		    	                        				System.out.println(p.getSeqTop());
+		    	                        				System.out.println(p.getSeqRight());
+		    	                        				System.out.println(p.getSeqLeft());
+		    	                        				System.out.println(p.getSeqBottom());
+		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				
+		    	                        			}
+		    	                        			
+		    	                        		}
+		    	                        		for (Piece p : innerList270.getPieces()) {
+		    	                        			
+		    	                        			
+		    	                        			if(p.getCount()==1) {
+		    	                        				pieceBorders270.addPiece(p);
+		    	                        				innerList270.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()==2) {
+		    	                        				pieceCorners270.addPiece(p);
+		    	                        				innerList270.removePiece(p);
+		    	                        			}
+		    	                        			else if(p.getCount()>2) {
+		    	                        				System.out.println(p.getNom());
+		    	                        				System.out.println(p.getSeqTop());
+		    	                        				System.out.println(p.getSeqRight());
+		    	                        				System.out.println(p.getSeqLeft());
+		    	                        				System.out.println(p.getSeqBottom());
+		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				
+		    	                        			}
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		ListePieces allOuterPieces = mergeListePieces(pieceCorners,pieceCorners90,pieceCorners180,pieceCorners270,pieceBorders,pieceBorders90,pieceBorders180,pieceBorders270);
+		    	                        		ListePieces allInnerPieces = mergeListePieces(innerList,innerList90,innerList180,innerList270);
+		    	                        		
+		    	                        		HashMap<String, ListePieces> innerMap= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: innerList.getPieces()) {
+		    	                        			innerMap.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> innerMap90= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: innerList90.getPieces()) {
+		    	                        			innerMap90.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap90.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap90.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap90.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> innerMap180= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: innerList180.getPieces()) {
+		    	                        			innerMap180.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap180.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap180.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap180.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> innerMap270= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: innerList270.getPieces()) {
+		    	                        			innerMap270.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap270.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap270.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			innerMap270.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> hm= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: pieceBorders.getPieces()) {
+		    	                        			hm.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		for(Piece p: pieceCorners.getPieces()) {
+		    	                        			hm.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getBottomSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm.computeIfAbsent(p.getLeftSignature(),k-> new ListePieces()).addPiece(p);
+
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> hm90= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: pieceBorders90.getPieces()) {
+		    	                        			hm90.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		for(Piece p: pieceCorners90.getPieces()) {
+		    	                        			hm90.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getBottomSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm90.computeIfAbsent(p.getLeftSignature(),k-> new ListePieces()).addPiece(p);
+		    	                  
+
+		    	                        		}
+		    	                        		HashMap<String, ListePieces> hm180= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: pieceBorders180.getPieces()) {
+		    	                        			hm180.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		for(Piece p: pieceCorners180.getPieces()) {
+		    	                        			hm180.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getBottomSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm180.computeIfAbsent(p.getLeftSignature(),k-> new ListePieces()).addPiece(p);
+
+		    	                        		}
+		    	                        		
+		    	                        		HashMap<String, ListePieces> hm270= new HashMap<String, ListePieces>();
+		    	                        		for (Piece p: pieceBorders270.getPieces()) {
+		    	                        			hm270.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			
+		    	                        		}
+		    	                        		
+		    	                        		for(Piece p: pieceCorners270.getPieces()) {
+		    	                        			hm270.computeIfAbsent(p.getTopSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getRightSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getBottomSignature(),k-> new ListePieces()).addPiece(p);
+		    	                        			hm270.computeIfAbsent(p.getLeftSignature(),k-> new ListePieces()).addPiece(p);
+
+		    	                        		}
+		    	                        	
+		    	                        		
+		    	                        		HashMap<String, ListePieces> hmfusion = mergeHashMaps(hm,hm90,hm180,hm270);
+		    	                        		HashMap<String, ListePieces> hmInnerMerge = mergeHashMaps(innerMap,innerMap90,innerMap180,innerMap270); 
+		    	                        		Set<String> visitedStates1 = new HashSet<>();
+		    	                        		Set<String> visitedStates2 = new HashSet<>();
+
+
+		    	                        		
+		    	                    
+		    	                        		
+		    	                        		
+		    	                        		ListePieces finalList= new ListePieces();
+		    	                        		ArrayList<String> tentatives = new ArrayList<>();
+		    	                        		ArrayList<String> directions = new ArrayList<>();
+		    	                        		Piece p1=pieceCorners.getPieces().getFirst();
+		    	                        		p1.setState(true);
+		    	                        		finalList.addPiece(p1);
+		    	                        		String direction=p1.directionCorners()[0];
+		    	                        		directions.add(direction);
+		    	                        		int count=1;
+		    	                        		Puzzle puzzle=new Puzzle();
+		    	                        		ResolveBorder(hmfusion,finalList,count,direction,allOuterPieces,pieceCorners,pieceCorners90,pieceCorners180,pieceCorners270,pieceBorders,puzzle,directions,visitedStates1);
+		    	                        		
+		    	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
+		    	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
+		    	                        
+		    	                        		if(piecesNumber!=totalPieces){
+		    	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
+		    	                        		}
+		    	                        	else {
+		    	                        		
+		    	                        		
+		    	                        			puzzle=new Puzzle(puzzle.getl(),puzzle.getL());
+		    	                        			
+		    	                        			
+		    	                        			HashMap<String, ListePieces> signatureMap = new HashMap<>();
+		    	                        			
+		    	                        			for (Piece p:innerList.getPieces()) {
+		    	                        				signatureMap.computeIfAbsent(p.getTopSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        				signatureMap.computeIfAbsent(p.getRightSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        				signatureMap.computeIfAbsent(p.getLeftSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        				signatureMap.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
+		    	                        			}
+		    	                        			
+		    	                        			
+		    	                       
+		    	                        			
+		    	                        			int w=0;
+		    	                        			for (int i=0;i<puzzle.getl();i++) {
+		    	                        				
+		    	                        				puzzle.setCase(finalList.getPieces().get(w),i,0);
+		    	                        				w++;
+		    	                        			}
+
+		    	                        			for (int j=1;j<puzzle.getL();j++) {
+		    	                        				puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
+		    	                        				w++;
+		    	                        			}
+
+		    	                        			for (int k=puzzle.getl()-2;k>=0;k--) {
+		    	                        				puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
+		    	                        				w++;
+		    	                        			}
+
+		    	                        			for (int n=puzzle.getL()-2;n>0;n--) {
+		    	                        				puzzle.setCase(finalList.getPieces().get(w), 0,n);
+		    	                        				w++;
+		    	                        			}
+
+		    	                        			
+		    	                        			
+		    	                        		resolveInner(puzzle,hmInnerMerge,allInnerPieces,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives,visitedStates2);
+		    	                        			
+		    	                       
+		    	                        		}
+		    	                        		
+		    	        
+		    	                        		
+		    	                       ArrayList<String> tentatives1 = new ArrayList<>();	
+		    	                       ouvrirFenetrePuzzle(puzzle,tentatives1,null);
+		    		                }
+		    	                     else {
+		    	                    	listView.getItems().add("Aucun fichier trouvé !");
+		    	                    }
 		            		
 		            		
 		            		
@@ -508,6 +853,304 @@ public class Main extends Application {
 	    puzzleStage.setScene(scene);
 	    puzzleStage.setTitle("Puzzle Résolu");
 	    puzzleStage.show();
+	}
+	
+	
+	
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hmfusion, ListePieces finalList, int count, String direction,ListePieces allOuterPieces, ListePieces pieceCorners,ListePieces pieceCorners90,ListePieces pieceCorners180,ListePieces pieceCorners270,ListePieces pieceBorders, Puzzle dimImg,ArrayList<String> directions,Set<String> visitedStates1) {
+		Piece p1=finalList.getPieces().getLast();
+		String cleEtat = construireCleEtat(finalList, direction);
+		if (visitedStates1.contains(cleEtat)) {
+		    return false;
+		}
+		visitedStates1.add(cleEtat);
+    		String Signature = null;
+    		String oppositeDirection=p1.oppositeDirection(direction);
+    		if(pieceCorners.containsPiece(p1)||pieceCorners90.containsPiece(p1)||pieceCorners180.containsPiece(p1)||pieceCorners270.containsPiece(p1)) {
+    			count++;
+    			if(dimImg.getl()==0 || dimImg.getl()==1 || dimImg.getl()==2) {
+    				dimImg.setl(count);
+    			}
+    			else if(dimImg.getL()==0) {
+    				dimImg.setL(count);
+    			}
+    			count=0;
+    			direction=changeDirection(oppositeDirection,p1);
+    			directions.add(direction);
+    			oppositeDirection=p1.oppositeDirection(direction);
+    		}
+    		
+    		
+    		
+    		switch(direction) {
+    			case "right":
+    				Signature=p1.getRightSignature();
+    				break;
+    			case "left":
+    				Signature=p1.getLeftSignature();
+    				break;
+    			case "top":
+    				Signature=p1.getTopSignature();
+    				break;
+    			case "bottom":
+    				Signature=p1.getBottomSignature();
+    				break;
+    			default:
+    				System.out.println("Direction non reconnue");
+    				break;
+    		}
+    		
+    		ListePieces candidats=hmfusion.get(Signature);
+    		
+     		ListePieces candidats2=filterByUsed(candidats);
+     		
+    		if(candidats2.isEmpty()) {
+    			
+    			if(finalList.getPieces().size()== pieceCorners.getPieces().size() + pieceBorders.getPieces().size()) {
+    				
+    				
+    		        Piece first = finalList.getPieces().getFirst();
+    		        Piece last = finalList.getPieces().getLast();
+    		        
+    		        String sigLast = null;
+    		        String sigFirst = null;
+    		        String lastDirection=directions.getLast();
+    		        
+    		        switch (lastDirection) {
+    		            case "right":
+    		                sigLast = last.getRightSignature();
+    		                sigFirst = first.getLeftSignature();
+    		                break;
+    		            case "left":
+    		                sigLast = last.getLeftSignature();
+    		                sigFirst = first.getRightSignature();
+    		                break;
+    		            case "top":
+    		                sigLast = last.getTopSignature();
+    		                sigFirst = first.getBottomSignature();
+    		                break;
+    		            case "bottom":
+    		                sigLast = last.getBottomSignature();
+    		                sigFirst = first.getTopSignature();
+    		                break;
+    		        }
+
+    		        if (sigLast != null && sigLast.equals(sigFirst)) {
+    		            return true;
+    		        } else {
+    		            return false; 
+    		        }
+    			}
+    			else {
+    				return false;
+    			}
+    		}
+    		
+    		for (Piece p:candidats2.getPieces()) {
+    			count++;
+    			p.setState(true);
+    			finalList.addPiece(p);
+    			String prefix = p.getNom().substring(0, Math.min(7, p.getNom().length()));
+    			marquageWithPrefix(allOuterPieces,prefix);
+    			
+    			Boolean success=ResolveBorder(hmfusion,finalList,count,direction,allOuterPieces,pieceCorners,pieceCorners90,pieceCorners180,pieceCorners270,pieceBorders,dimImg,directions,visitedStates1);
+    			if (success) { return true;}
+    			else {
+    				p.setState(false);
+    				finalList.removePiece(p);
+    			}
+    		}
+    		return false;		
+		
+	}
+	private ListePieces filterByUsed(ListePieces candidats) {
+		ListePieces result = new ListePieces();
+		
+		for (Piece p: candidats.getPieces()) {
+			if(!p.getState()) {
+				result.addPiece(p);
+			}
+		}
+		return result;
+	}
+	public static ListePieces mergeListePieces(ListePieces... listes) {
+	    ListePieces fusion = new ListePieces();
+	    Set<String> nameAlreadyIn = new HashSet<>();
+
+	    for (ListePieces lp : listes) {
+	        if (lp != null) {
+	            for (Piece p : lp.getPieces()) {
+	                String nom = p.getNom();
+	                if (!nameAlreadyIn .contains(nom)) {
+	                    fusion.addPiece(p);
+	                    nameAlreadyIn .add(nom);
+	                }
+	            }
+	        }
+	    }
+
+	    return fusion;
+	}
+	@SafeVarargs
+	public static HashMap<String, ListePieces> mergeHashMaps(HashMap<String, ListePieces>... maps) {
+		
+		    HashMap<String, ListePieces> fusion = new HashMap<>();
+		    for (HashMap<String, ListePieces> map : maps) {
+		        for (Map.Entry<String, ListePieces> entry : map.entrySet()) {
+		            String key = entry.getKey();
+		            ListePieces pieces = entry.getValue();
+
+		            fusion.computeIfAbsent(key, k -> new ListePieces()).addAll(pieces); 
+		        }
+		    }
+
+		    return fusion;
+		}
+
+
+	public void marquageWithPrefix(ListePieces toutesLesPieces, String prefix) {
+	    for (Piece p : toutesLesPieces.getPieces()) {
+	        if (p.getNom().startsWith(prefix)) {
+	            p.setState(true);
+	        }
+	    }
+	}
+	private String construireCleEtat(ListePieces finalList, String direction) {
+	    return direction + "|" + finalList.getPieces().stream()
+	        .map(Piece::getNom)
+	        .collect(Collectors.joining(","));
+	}
+
+	
+	private String changeDirection(String direction,Piece p1) {
+		if(p1!=null) {
+			String[] directions=p1.directionCorners();
+			for (String s: directions) {
+				if(s!=direction) {
+					return s;
+					}
+			}
+		}
+		return null;
+	}
+	
+	private Boolean resolveInner(Puzzle puzzle, HashMap<String, ListePieces> hmInnerMerge, ListePieces allInnerPieces, int y, int x, int ymax, int xmax,ArrayList<String> tentatives,Set<String> visitedStates2) {
+		
+		
+		if (x >= xmax) {
+	        return true; 
+	    }
+		
+		if(y>=ymax) {
+			return resolveInner(puzzle,hmInnerMerge,allInnerPieces,1,x+1,ymax,xmax,tentatives,visitedStates2);
+		}
+		String stateKey = generateMemoKey(puzzle, x, y);
+	    if (visitedStates2.contains(stateKey)) {
+	        return false;
+	    }
+	    visitedStates2.add(stateKey);
+	    
+		 String leftSig = puzzle.getCase(x-1, y).getRightSignature();
+		 String topSig = puzzle.getCase(x, y-1).getBottomSignature();
+		 String bottomSig=null;
+		 String rightSig=null;
+		 if(y+1==ymax) {
+			 bottomSig =puzzle.getCase(x,y+1).getTopSignature();
+		 }
+		 if(x+1==xmax) {
+			 rightSig=puzzle.getCase(x+1, y).getLeftSignature();
+		 }
+		 ListePieces candidats=getCandidatsBySignature(hmInnerMerge,leftSig,topSig,bottomSig,rightSig);
+		 if (candidats.isEmpty()) return false;
+		 
+		 ListePieces filteredCandidates=filterByUsed(candidats);
+		 if (filteredCandidates.isEmpty()) return false;
+		 
+		 for (Piece p:filteredCandidates.getPieces()) {
+			 p.setState(true);
+			 puzzle.setCase(p, x, y);
+			 String prefix = p.getNom().substring(0, Math.min(7, p.getNom().length()));
+ 			 marquageWithPrefix(allInnerPieces,prefix);
+			 
+			 if (resolveInner(puzzle, hmInnerMerge,allInnerPieces, y + 1, x, ymax, xmax,tentatives,visitedStates2)) {
+		            return true; 
+		        }
+
+
+		        p.setState(false);
+		        puzzle.setCase(null,x, y);
+		 }
+		 
+		tentatives.add("tentative#"+x+y); 
+		return false;
+	}
+	
+	
+	private ListePieces getCandidatsBySignature(HashMap<String, ListePieces> hm, String leftSig, String topSig, String bottomSig, String rightSig) {
+	    Set<Piece> candidats = null;
+
+	    
+	    if (leftSig != null) {
+	        Set<Piece> leftSet = new HashSet<>();
+	        for (Piece p : hm.getOrDefault(leftSig, new ListePieces()).getPieces()) {
+	            if (leftSig.equals(p.getLeftSignature())) leftSet.add(p);
+	        }
+	        candidats = leftSet;
+	    }
+
+	    if (topSig != null) {
+	        Set<Piece> topSet = new HashSet<>();
+	        for (Piece p : hm.getOrDefault(topSig, new ListePieces()).getPieces()) {
+	            if (topSig.equals(p.getTopSignature())) topSet.add(p);
+	        }
+	        if (candidats == null) candidats = topSet;
+	        else candidats.retainAll(topSet);
+	        if (candidats.isEmpty()) return new ListePieces(); 
+	    }
+
+	    if (bottomSig != null) {
+	        Set<Piece> bottomSet = new HashSet<>();
+	        for (Piece p : hm.getOrDefault(bottomSig, new ListePieces()).getPieces()) {
+	            if (bottomSig.equals(p.getBottomSignature())) bottomSet.add(p);
+	        }
+	        if (candidats == null) candidats = bottomSet;
+	        else candidats.retainAll(bottomSet);
+	        if (candidats.isEmpty()) return new ListePieces();
+	    }
+
+	    if (rightSig != null) {
+	        Set<Piece> rightSet = new HashSet<>();
+	        for (Piece p : hm.getOrDefault(rightSig, new ListePieces()).getPieces()) {
+	            if (rightSig.equals(p.getRightSignature())) rightSet.add(p);
+	        }
+	        if (candidats == null) candidats = rightSet;
+	        else candidats.retainAll(rightSet);
+	        if (candidats.isEmpty()) return new ListePieces();
+	    }
+
+	    ListePieces result = new ListePieces();
+	    if (candidats != null) {
+	        for (Piece p : candidats) {
+	            result.addPiece(p);
+	        }
+	    }
+	    return result;
+	
+	}
+	private String generateMemoKey(Puzzle puzzle, int x, int y) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(x).append(":").append(y).append("|");
+
+	    for (int i = 0; i < puzzle.getl(); i++) {
+	        for (int j = 0; j < puzzle.getL(); j++) {
+	            Piece p = puzzle.getCase(i, j);
+	            if (p != null) {
+	                sb.append(i).append("-").append(j).append("=").append(p.getNom()).append(",");
+	            }
+	        }
+	    }
+
+	    return sb.toString();
 	}
 
 

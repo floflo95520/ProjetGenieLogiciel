@@ -2,6 +2,7 @@ package classes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ public class ListePieces {
     
     /** La liste des pièces de puzzle */
     private List<Piece> pieces;
+    private Set<Piece> pieceSet = new HashSet<>();
     
     /**
      * Constructeur de la classe ListePieces
@@ -27,8 +29,11 @@ public class ListePieces {
      * 
      * @param piece La pièce à ajouter
      */
-    public void addPiece(Piece piece) {
-        pieces.add(piece);
+    public void addPiece(Piece p) {
+        if (!pieceSet.contains(p)) {
+            pieces.add(p);
+            pieceSet.add(p);
+        }
     }
     
     /**
@@ -36,8 +41,15 @@ public class ListePieces {
      * 
      * @param piece La pièce à supprimer
      */
-    public void removePiece(Piece piece) {
-        pieces.remove(piece);
+    public void removePiece(Piece p) {
+        if (pieceSet.remove(p)) {
+            pieces.remove(p);
+        }
+    }
+    public void addAll(ListePieces autres) {
+        for (Piece p : autres.getPieces()) {
+            addPiece(p); 
+        }
     }
     
     /**
@@ -47,7 +59,7 @@ public class ListePieces {
      * @return true si la pièce existe, false sinon
      */
     public boolean containsPiece(Piece piece) {
-        return pieces.contains(piece);
+        return pieceSet.contains(piece);
     }
     
     /**

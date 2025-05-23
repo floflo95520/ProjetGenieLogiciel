@@ -893,11 +893,7 @@ public class Piece {
 	        this.img = rotate90CounterClockwise(input,output);
 	        nom=name;
 	        this.corners = corners(this.img);
-	        for(int i=0;i<4;i++){
-	        	for(int j=0;j<2;j++){
-	        		System.out.println(corners[i][j]);// vérifie que corners() retourne bien [4][2]
-	        	}
-	        }
+	        
 	        top=null;
 	        right=null;
 	        bottom=null;
