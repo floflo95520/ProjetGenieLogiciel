@@ -127,7 +127,7 @@ public class Piece {
 		int width=img.getWidth();
 		int[][] tab= new int[4][2];
 		int i=0,j=0;
-		// Coin en haut à gauche
+
 		while(i<img.getWidth() && j<img.getHeight()&& ((img.getRGB(i, j)>>24) & 0xff) == 0) {
 			i++;j++;
 		}
@@ -911,7 +911,7 @@ public class Piece {
 	        if (isSingleCharRepeatedUntilUnderscore(seqBottom)) bottom = null;
 	        if (isSingleCharRepeatedUntilUnderscore(seqLeft))   left = null;
 
-	        // Nettoyage des signatures si bord vide
+	        
 
 	    }
 	}
@@ -923,7 +923,7 @@ public class Piece {
 	 * @throws IOException
 	 */
 	public static BufferedImage rotate90CounterClockwise(File input,File output) throws IOException {
-		 // Chargement de l'image
+		
         ImageInputStream iis = ImageIO.createImageInputStream(input);
         Iterator<ImageReader> iterator =ImageIO.getImageReaders(iis);
         ImageReader reader= iterator.next();

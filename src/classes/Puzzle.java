@@ -26,8 +26,8 @@ public class Puzzle {
 		}
 		/**
 		 * Constructeur complet de la classe puzzle
-		 * @param l
-		 * @param L
+		 * @param l nombre de colonnes de la matrice
+		 * @param L nombre de lignes de la matrice
 		 */
 		public Puzzle(int l, int L) {
 			this.puzzle=new Piece[L][l];
@@ -35,7 +35,7 @@ public class Puzzle {
 			this.L=L;
 		}
 		/**
-		 * 
+		 * accéder à l
 		 * @return l, la longueur sur l'axe des abscisses
 		 */
 		public int getl() {
@@ -43,13 +43,13 @@ public class Puzzle {
 		}
 		/**
 		 * Permet de modifier l
-		 * @param l
+		 * @param l valeur que va prendre l'attribut
 		 */
 		public void setl(int l) {
 			this.l = l;
 		}
 		/**
-		 * 
+		 * accéder à L
 		 * @return L, la longueur sur l'axe des ordonnées
 		 */
 		public int getL() {
@@ -57,15 +57,15 @@ public class Puzzle {
 		}
 		/**
 		 * Permet de modifier L
-		 * @param l
+		 * @param l valeur que va prendre l'attribut
 		 */
 		public void setL(int l) {
 			this.L = l;
 		}
 		/**
 		 * Récupère la case aux coordonnées l,L
-		 * @param l
-		 * @param L
+		 * @param l colonne numéro l
+		 * @param L ligne numéro L
 		 * @return la pièce correspondante
 		 */
 		public Piece getCase(int l,int L) {
@@ -73,15 +73,24 @@ public class Puzzle {
 		}
 		/**
 		 * Permet de modifier la pièce à la case [L][l]
-		 * @param p
-		 * @param l
-		 * @param L
+		 * @param p piece à insérer dans la matrice
+		 * @param l nombre de colonnes 
+		 * @param L nombre de lignes
 		 */
 		public void setCase(Piece p, int l, int L) {
 			this.puzzle[L][l]=p;
 		}
 		
-		
+		/**
+		 * fonction qui va remplir l'intérieur afin de compléter le puzzle
+		 * @param puzzle le puzzle à remplir
+		 * @param hm contient toutes les pieces de l'intérieur
+		 * @param ymax y max
+		 * @param xmax x max
+		 * @param tentatives liste des tentatives stockées
+		 * @return booléen afin d'indiquer si le remplissage est correct
+		 * @throws Exception si on tombe dans une boucle infinie car le bord s'est mal rempli
+		 */
 		public Boolean resolveInnerIteratif(Puzzle puzzle, HashMap<String, ListePieces> hm, int ymax, int xmax,ArrayList<String> tentatives) throws Exception {
 			int maxIterations = 1000000;
 			int currentIterations = 0;
@@ -176,7 +185,15 @@ public class Puzzle {
 		    }
 		}
 		
-		
+		/**
+		 * Récupère les candidats dont les signatures correspondent à ses voisins afin d'en éliminer au maximum
+		 * @param hm contient toutes les signatures des pieces à l'intérieur du puzzle
+		 * @param leftSig signature gauche recherchée
+		 * @param topSig signature haut recherchée
+		 * @param bottomSig signature bas recherchée
+		 * @param rightSig signature droite recherchée
+		 * @return result liste filtrée des pièces
+		 */
 		private ListePieces getCandidatsBySignature(HashMap<String, ListePieces> hm, String leftSig, String topSig,
 				String bottomSig,String rightSig) {
 			 	ListePieces left = hm.getOrDefault(leftSig, new ListePieces());
@@ -222,7 +239,6 @@ public class Puzzle {
 			    if (filteredRight != null) intersection.retainAll(filteredRight);
 			    if (filteredBottom != null) intersection.retainAll(filteredBottom);
 
-			    // On retourne une ListePieces contenant les candidats valides
 			    ListePieces result = new ListePieces();
 			    for (Piece p : intersection) {
 			        result.addPiece(p);

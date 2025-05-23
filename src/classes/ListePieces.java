@@ -124,14 +124,14 @@ public class ListePieces {
         for (Piece other : this.pieces) {
             double diff = scoreDifference(p1, other, direction);
             
-            // arrondir la différence à 2 décimales
+
             diff = Math.round(diff * 100.0) / 100.0;
 
-            // Ajouter la pièce à la liste associée au score
+
             scoreMap.computeIfAbsent(diff, k -> new ArrayList<>()).add(other);
         }
 
-        // Fusionner toutes les listes dans l’ordre des scores
+
         List<Piece> sortedList = new ArrayList<>();
         for (List<Piece> group : scoreMap.values()) {
             sortedList.addAll(group);
@@ -388,7 +388,7 @@ public class ListePieces {
 		                candidateSignature = p.getBottomSignature();
 		                break;
 		            default:
-		                continue; // Direction non reconnue
+		                continue; 
 		        }
 		        if (candidateSignature != null && !candidateSignature.isEmpty() && candidateSignature.equals(signature)) {
 		            result.addPiece(p);
