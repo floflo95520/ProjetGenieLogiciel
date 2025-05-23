@@ -27,7 +27,7 @@ public class ListePieces {
     /**
      * Ajoute une pièce à la liste
      * 
-     * @param piece La pièce à ajouter
+     * @param p La pièce à ajouter
      */
     public void addPiece(Piece p) {
         if (!pieceSet.contains(p)) {
@@ -39,13 +39,17 @@ public class ListePieces {
     /**
      * Supprime une pièce de la liste
      * 
-     * @param piece La pièce à supprimer
+     * @param p La pièce à supprimer
      */
     public void removePiece(Piece p) {
         if (pieceSet.remove(p)) {
             pieces.remove(p);
         }
     }
+    /**
+     * permet d'ajouter à la liste une liste complète
+     * @param autres
+     */
     public void addAll(ListePieces autres) {
         for (Piece p : autres.getPieces()) {
             addPiece(p); 

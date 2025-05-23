@@ -49,7 +49,9 @@ public class Main extends Application {
 	ListePieces innerList180= new ListePieces();
 	ListePieces innerList270= new ListePieces();
 
-	
+	/**
+	 * Code principal se décomposant en deux grosses parties : une où l'on traite un puzzle avec rotations (l.262) et l'autre sans (l.75)
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
@@ -70,7 +72,7 @@ public class Main extends Application {
 		            	listView.getItems().clear();
 		            	listView.getItems().add("Dossier sélectionné : " + dossier.getAbsolutePath());
 		            	String nomDossier = dossier.getName(); 
-		            	if(!nomDossier.endsWith("_rotate")) {
+		            	if(!nomDossier.endsWith("_rotate")) { // PARTIE SANS ROTATION
 		            	listView.getItems().add("Fichiers trouvés et traités :");
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
@@ -256,7 +258,7 @@ public class Main extends Application {
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
 	                    }
-		            }
+		            } // PARTIE ROTATION
 		            	else if(nomDossier.endsWith("_rotate")) {
 		            		
 		            		
@@ -300,8 +302,9 @@ public class Main extends Application {
 		    										
 		    											
 		    										} catch (Exception e1) {
-		    											
-		    											e1.printStackTrace();
+		    											String errorMessage = "Erreur lors de la création des signatures d'une pièce.";
+		    	                        				ouvrirFenetrePuzzle(null,null,errorMessage);
+		    	                        				return ;
 		    										}
 		    	                                	listView.getItems().add(fichier.getName());
 		    	                                }
@@ -330,12 +333,9 @@ public class Main extends Application {
 		    	                        				innerList.removePiece(p);
 		    	                        			}
 		    	                        			else if(p.getCount()>2) {
-		    	                        				System.out.println(p.getNom());
-		    	                        				System.out.println(p.getSeqTop());
-		    	                        				System.out.println(p.getSeqRight());
-		    	                        				System.out.println(p.getSeqLeft());
-		    	                        				System.out.println(p.getSeqBottom());
-		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				String messageErreur = "Erreur de lecture d'une ou plusieurs pièces ou bien le dossier sélectionné est incorrect.";
+		    	                        				ouvrirFenetrePuzzle(null,null,messageErreur);
+		    	                        				return;
 		    	                        				
 		    	                        			}
 		    	                        			
@@ -352,12 +352,9 @@ public class Main extends Application {
 		    	                        				innerList90.removePiece(p);
 		    	                        			}
 		    	                        			else if(p.getCount()>2) {
-		    	                        				System.out.println(p.getNom());
-		    	                        				System.out.println(p.getSeqTop());
-		    	                        				System.out.println(p.getSeqRight());
-		    	                        				System.out.println(p.getSeqLeft());
-		    	                        				System.out.println(p.getSeqBottom());
-		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				String messageErreur = "Erreur de lecture d'une ou plusieurs pièces ou bien le dossier sélectionné est incorrect.";
+		    	                        				ouvrirFenetrePuzzle(null,null,messageErreur);
+		    	                        				return;
 		    	                        				
 		    	                        			}
 		    	                        			
@@ -374,12 +371,9 @@ public class Main extends Application {
 		    	                        				innerList180.removePiece(p);
 		    	                        			}
 		    	                        			else if(p.getCount()>2) {
-		    	                        				System.out.println(p.getNom());
-		    	                        				System.out.println(p.getSeqTop());
-		    	                        				System.out.println(p.getSeqRight());
-		    	                        				System.out.println(p.getSeqLeft());
-		    	                        				System.out.println(p.getSeqBottom());
-		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				String messageErreur = "Erreur de lecture d'une ou plusieurs pièces ou bien le dossier sélectionné est incorrect.";
+		    	                        				ouvrirFenetrePuzzle(null,null,messageErreur);
+		    	                        				return;
 		    	                        				
 		    	                        			}
 		    	                        			
@@ -396,12 +390,9 @@ public class Main extends Application {
 		    	                        				innerList270.removePiece(p);
 		    	                        			}
 		    	                        			else if(p.getCount()>2) {
-		    	                        				System.out.println(p.getNom());
-		    	                        				System.out.println(p.getSeqTop());
-		    	                        				System.out.println(p.getSeqRight());
-		    	                        				System.out.println(p.getSeqLeft());
-		    	                        				System.out.println(p.getSeqBottom());
-		    	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
+		    	                        				String messageErreur = "Erreur de lecture d'une ou plusieurs pièces ou bien le dossier sélectionné est incorrect.";
+		    	                        				ouvrirFenetrePuzzle(null,null,messageErreur);
+		    	                        				return;
 		    	                        				
 		    	                        			}
 		    	                        			
@@ -535,15 +526,30 @@ public class Main extends Application {
 		    	                        		directions.add(direction);
 		    	                        		int count=1;
 		    	                        		Puzzle puzzle=new Puzzle();
-		    	                        		ResolveBorder(hmfusion,finalList,count,direction,allOuterPieces,pieceCorners,pieceCorners90,pieceCorners180,pieceCorners270,pieceBorders,puzzle,directions,visitedStates1);
+		    	                        		
+		    	                        		try{
+		    	                        			ResolveBorder(hmfusion,finalList,count,direction,allOuterPieces,pieceCorners,pieceCorners90,pieceCorners180,pieceCorners270,pieceBorders,puzzle,directions,visitedStates1);
+		    	                        		}
+		    	                        		catch(Exception e2) {
+		    	                        			String errorMessage="Erreur lors de la résolution du bord du puzzle.";
+		    	                        			ouvrirFenetrePuzzle(null,null,errorMessage);
+		    	                        			return;
+		    	                        		}
 		    	                        		
 		    	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
 		    	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
 		    	                        
 		    	                        		if(piecesNumber!=totalPieces){
-		    	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
+		    	                        			String errorMessage="Avertissement. Les dimensions trouvées ne correspondent pas au nombre total de pièces du puzzle.";
+		    	                        			ouvrirFenetrePuzzle(null,null,errorMessage);
+		    	                        			try {
+		    											Thread.sleep(3000);
+		    										} catch (InterruptedException e1) {
+		    											ouvrirFenetrePuzzle(null,null,e1.getMessage());
+		    											return;
+		    										}
 		    	                        		}
-		    	                        	else {
+		    	                        	
 		    	                        		
 		    	                        		
 		    	                        			puzzle=new Puzzle(puzzle.getl(),puzzle.getL());
@@ -564,69 +570,48 @@ public class Main extends Application {
 		    	                        			int w=0;
 		    	                        			for (int i=0;i<puzzle.getl();i++) {
 		    	                        				
-		    	                        				puzzle.setCase(finalList.getPieces().get(w),i,0);
+		    	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w),i,0);
 		    	                        				w++;
 		    	                        			}
 
 		    	                        			for (int j=1;j<puzzle.getL();j++) {
-		    	                        				puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
+		    	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), puzzle.getl()-1, j);
 		    	                        				w++;
 		    	                        			}
 
 		    	                        			for (int k=puzzle.getl()-2;k>=0;k--) {
-		    	                        				puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
+		    	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), k, puzzle.getL()-1);
 		    	                        				w++;
 		    	                        			}
 
 		    	                        			for (int n=puzzle.getL()-2;n>0;n--) {
-		    	                        				puzzle.setCase(finalList.getPieces().get(w), 0,n);
+		    	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), 0,n);
 		    	                        				w++;
 		    	                        			}
 
 		    	                        			
-		    	                        			
-		    	                        		resolveInner(puzzle,hmInnerMerge,allInnerPieces,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives,visitedStates2);
+		    	                        		String errorMessage=null;	
+		    	                        		try{
+		    	                        			resolveInner(puzzle,hmInnerMerge,allInnerPieces,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives,visitedStates2);
+		    	                        		}catch (Exception error) {
+			                        			    errorMessage = error.getMessage();
+			                        			    ouvrirFenetrePuzzle(puzzle,tentatives,errorMessage);
+			                        			    return;
+			                        			} catch (StackOverflowError error) {
+			                        			    errorMessage = "Erreur : débordement de pile (stack overflow).";
+			                        			    ouvrirFenetrePuzzle(null,null,errorMessage);
+			                        			    return;
+			                        			}
 		    	                        			
 		    	                       
-		    	                        		}
 		    	                        		
-		    	        
 		    	                        		
-		    	                       ArrayList<String> tentatives1 = new ArrayList<>();	
-		    	                       ouvrirFenetrePuzzle(puzzle,tentatives1,null);
+		    	      
+		    	                       ouvrirFenetrePuzzle(puzzle,tentatives,null);
 		    		                }
 		    	                     else {
 		    	                    	listView.getItems().add("Aucun fichier trouvé !");
 		    	                    }
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
-		            		
 		            		
 		            		
 		            		
@@ -855,7 +840,23 @@ public class Main extends Application {
 	    puzzleStage.show();
 	}
 	
-	
+	/**
+	 * Resoudre le bord avec rotations
+	 * @param hmfusion
+	 * @param finalList
+	 * @param count
+	 * @param direction
+	 * @param allOuterPieces
+	 * @param pieceCorners
+	 * @param pieceCorners90
+	 * @param pieceCorners180
+	 * @param pieceCorners270
+	 * @param pieceBorders
+	 * @param dimImg
+	 * @param directions
+	 * @param visitedStates1
+	 * @return booléen qui indique l'exactitude du remplissage
+	 */
 	
 	private Boolean ResolveBorder(HashMap<String, ListePieces> hmfusion, ListePieces finalList, int count, String direction,ListePieces allOuterPieces, ListePieces pieceCorners,ListePieces pieceCorners90,ListePieces pieceCorners180,ListePieces pieceCorners270,ListePieces pieceBorders, Puzzle dimImg,ArrayList<String> directions,Set<String> visitedStates1) {
 		Piece p1=finalList.getPieces().getLast();
@@ -963,6 +964,11 @@ public class Main extends Application {
     		return false;		
 		
 	}
+	/**
+	 * Filtre par pièces utilisées ou non
+	 * @param candidats
+	 * @return liste de pièces
+	 */
 	private ListePieces filterByUsed(ListePieces candidats) {
 		ListePieces result = new ListePieces();
 		
@@ -973,6 +979,11 @@ public class Main extends Application {
 		}
 		return result;
 	}
+	/**
+	 * fusionner des listes de pieces
+	 * @param listes à considérer
+	 * @return liste de la fusion
+	 */
 	public static ListePieces mergeListePieces(ListePieces... listes) {
 	    ListePieces fusion = new ListePieces();
 	    Set<String> nameAlreadyIn = new HashSet<>();
@@ -991,6 +1002,11 @@ public class Main extends Application {
 
 	    return fusion;
 	}
+	/**
+	 * Fusionner des hashmap
+	 * @param maps
+	 * @return une hashmap fusionnée
+	 */
 	@SafeVarargs
 	public static HashMap<String, ListePieces> mergeHashMaps(HashMap<String, ListePieces>... maps) {
 		
@@ -1007,7 +1023,11 @@ public class Main extends Application {
 		    return fusion;
 		}
 
-
+	/**
+	 * mettre toutes les pièces qui ont le même préfixe sur le même statut(permet d'éviter de mettre une même pièce mais dans une rotation différente)
+	 * @param toutesLesPieces
+	 * @param prefix
+	 */
 	public void marquageWithPrefix(ListePieces toutesLesPieces, String prefix) {
 	    for (Piece p : toutesLesPieces.getPieces()) {
 	        if (p.getNom().startsWith(prefix)) {
@@ -1015,13 +1035,24 @@ public class Main extends Application {
 	        }
 	    }
 	}
+	/**
+	 * construit une clé
+	 * @param finalList
+	 * @param direction
+	 * @return string
+	 */
 	private String construireCleEtat(ListePieces finalList, String direction) {
 	    return direction + "|" + finalList.getPieces().stream()
 	        .map(Piece::getNom)
 	        .collect(Collectors.joining(","));
 	}
 
-	
+	/**
+	 * change de direction lorsqu'on arrive sur un coin
+	 * @param direction
+	 * @param p1
+	 * @return string
+	 */
 	private String changeDirection(String direction,Piece p1) {
 		if(p1!=null) {
 			String[] directions=p1.directionCorners();
@@ -1034,6 +1065,19 @@ public class Main extends Application {
 		return null;
 	}
 	
+	/**
+	 * Remplit l'intérieur du puzzle avec rotations
+	 * @param puzzle
+	 * @param hmInnerMerge
+	 * @param allInnerPieces
+	 * @param y
+	 * @param x
+	 * @param ymax
+	 * @param xmax
+	 * @param tentatives
+	 * @param visitedStates2
+	 * @return true ou false pour indiquer si le remplissage est correct
+	 */
 	private Boolean resolveInner(Puzzle puzzle, HashMap<String, ListePieces> hmInnerMerge, ListePieces allInnerPieces, int y, int x, int ymax, int xmax,ArrayList<String> tentatives,Set<String> visitedStates2) {
 		
 		
@@ -1085,7 +1129,15 @@ public class Main extends Application {
 		return false;
 	}
 	
-	
+	/**
+	 * filtre les candidats selon une signature pour chaque côté
+	 * @param hm
+	 * @param leftSig
+	 * @param topSig
+	 * @param bottomSig
+	 * @param rightSig
+	 * @return la liste filtrée
+	 */
 	private ListePieces getCandidatsBySignature(HashMap<String, ListePieces> hm, String leftSig, String topSig, String bottomSig, String rightSig) {
 	    Set<Piece> candidats = null;
 
@@ -1137,6 +1189,13 @@ public class Main extends Application {
 	    return result;
 	
 	}
+	/**
+	 * génère une clé
+	 * @param puzzle
+	 * @param x
+	 * @param y
+	 * @return key
+	 */
 	private String generateMemoKey(Puzzle puzzle, int x, int y) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(x).append(":").append(y).append("|");
@@ -1154,7 +1213,10 @@ public class Main extends Application {
 	}
 
 
-	
+	/**
+	 * Main
+	 * @param args
+	 */
 	
 	public static void main(String[] args) {
 		launch(args);
