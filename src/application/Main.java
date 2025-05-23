@@ -233,9 +233,11 @@ public class Main extends Application {
 	                        			} catch (Exception error) {
 	                        			    errorMessage = error.getMessage();
 	                        			    ouvrirFenetrePuzzle(puzzle,tentatives,errorMessage);
+	                        			    return;
 	                        			} catch (StackOverflowError error) {
 	                        			    errorMessage = "Erreur : débordement de pile (stack overflow).";
 	                        			    ouvrirFenetrePuzzle(null,null,errorMessage);
+	                        			    return;
 	                        			}
 	                        
 
