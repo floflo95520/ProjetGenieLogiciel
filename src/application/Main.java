@@ -1,28 +1,14 @@
 package application;
 	
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
 import classes.Puzzle;
 import classes.ListePieces;
 import classes.Piece;
@@ -31,6 +17,7 @@ import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -38,20 +25,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 
 
-
+/**
+ * Classe principale avec affichage JavaFX
+ */
 public class Main extends Application {
 	
 	ListePieces innerList = new ListePieces();
@@ -75,8 +62,10 @@ public class Main extends Application {
 
 		            if (dossier != null) {
 		            	listView.getItems().clear();
+		            	listView.getItems().add("Dossier sélectionné : " + dossier.getAbsolutePath());
+		            	String nomDossier = dossier.getName(); 
+		            	if(!nomDossier.endsWith("_rotate")) {
 		            	listView.getItems().add("Fichiers trouvés et traités :");
-		                System.out.println("Dossier sélectionné : " + dossier.getAbsolutePath());
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
 		                if (fichiers != null) {
@@ -88,10 +77,6 @@ public class Main extends Application {
 	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
 
-	                                	String parent = fichier.getParent(); // "/home/user/images"
-	                                		String name = fichier.getName();     // "photo.png"
-	                                		String baseName = name.substring(0, name.lastIndexOf(".")); // "photo"
-	                                		String extension = name.substring(name.lastIndexOf("."));   // ".png"
 	                                		
 											Piece piece = new Piece(fichier,fichier.getName());
 
@@ -167,7 +152,7 @@ public class Main extends Application {
 	                        		Puzzle puzzle=new Puzzle();
 	                        		int expectedSize = pieceCorners.getPieces().size() + pieceBorders.getPieces().size();
 	                        		try {
-	                        			ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
+	                        			finalList.ResolveBorder(hm,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
 	                        		}
 	                        		catch (Exception e2) {
 	                        			String errorMessage="Erreur lors de la résolution du bord du puzzle.";
@@ -194,11 +179,17 @@ public class Main extends Application {
 	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
 	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
 	                        		if(piecesNumber!=totalPieces){
-	                        			String errorMessage="Erreur. Les dimensions trouvées ne correspondent pas au nombre total de pièces du puzzle. Fin du programme.";
+	                        			String errorMessage="Avertissement. Les dimensions trouvées ne correspondent pas au nombre total de pièces du puzzle.";
 	                        			ouvrirFenetrePuzzle(null,null,errorMessage);
+	                        			try {
+											Thread.sleep(3000);
+										} catch (InterruptedException e1) {
+											ouvrirFenetrePuzzle(null,null,e1.getMessage());
+											return;
+										}
 	                        		}
 	                        		
-	                        		else {
+	                        		
 	                        	
 	                        		
 	                        		
@@ -238,25 +229,66 @@ public class Main extends Application {
 	                        			}
 	                        			String errorMessage=null;
 	                        			try {
-	                        				resolveInnerIteratif(puzzle,signatureMap,puzzle.getL()-1,puzzle.getl()-1);
+	                        			    puzzle.resolveInnerIteratif(puzzle, signatureMap, puzzle.getL() - 1, puzzle.getl() - 1,tentatives);
+	                        			} catch (Exception error) {
+	                        			    errorMessage = error.getMessage();
+	                        			    ouvrirFenetrePuzzle(puzzle,tentatives,errorMessage);
 	                        			} catch (StackOverflowError error) {
-	                        			    errorMessage="Erreur lors de la résolution de l'intérieur. Veuillez reessayer plus tard.";
-	                        			    // ici, tu peux gérer le cas, comme arrêter la récursion, alerter l'utilisateur, etc.
+	                        			    errorMessage = "Erreur : débordement de pile (stack overflow).";
+	                        			    ouvrirFenetrePuzzle(null,null,errorMessage);
 	                        			}
 	                        
 
-	                        		ouvrirFenetrePuzzle(puzzle,tentatives,errorMessage);
+	                        		
 
-	                        		}
+	                        		
 	                        	
-	                       
+	                        			ouvrirFenetrePuzzle(puzzle,tentatives,null);
 		                }
 	                     else {
 	                    	listView.getItems().add("Aucun fichier trouvé !");
 	                    }
+		            }
+		            	else if(nomDossier.endsWith("_rotate")) {
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            		
+		            	}
 		            } else {
 		            	listView.getItems().add("Aucun dossier sélectionné.");
 		            }
+		            	
+		            
 		        });
 			root.setTop(D);
 			root.setCenter(listView);
@@ -264,313 +296,31 @@ public class Main extends Application {
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
+		    
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize,Set<String> visitedStates1) {
-		Piece p1=finalList.getPieces().getLast();
-		String cleEtat = construireCleEtat(finalList, direction);
-		if (visitedStates1.contains(cleEtat)) {
-		    return false;
-		}
-		visitedStates1.add(cleEtat);
-    		String Signature = null;
-    		String oppositeDirection=p1.oppositeDirection(direction);
-    		if(pieceCorners.containsPiece(p1)) {
-    			direction=changeDirection(oppositeDirection,p1);
-    			directions.add(direction);
-    		}
-    		String oppositeDirection1=p1.oppositeDirection(direction);
-    		switch(direction) {
-    			case "right":
-    				Signature=p1.getRightSignature();
-    				break;
-    			case "left":
-    				Signature=p1.getLeftSignature();
-    				break;
-    			case "top":
-    				Signature=p1.getTopSignature();
-    				break;
-    			case "bottom":
-    				Signature=p1.getBottomSignature();
-    				break;
-    			default:
-    				System.out.println("Direction non reconnue");
-    				break;
-    		}
-    		
-    		ListePieces candidats=hm.get(Signature);
-    		ListePieces candidats1=filterByRightSide(candidats, oppositeDirection1, Signature);
-    		ListePieces candidats2=filterByUsed(candidats1);
-
-    		
-    	if(candidats2.getPieces().size()>1) {
-    			TreeMap<Double, Piece> scoreMap = new TreeMap<>();
-    			candidats2.sortByPixelScoreDifference(p1,direction);
-    		}
-    		
-    		
-    		if(candidats2.isEmpty()) {
-    			if(finalList.getPieces().size()== expectedSize) {
-    				// Vérifie que la dernière pièce connecte bien à la première
-    		        Piece first = finalList.getPieces().getFirst();
-    		        Piece last = finalList.getPieces().getLast();
-    		        
-    		        String sigLast = null;
-    		        String sigFirst = null;
-    		        String lastDirection=directions.getLast();
-    		        // direction ici est la direction dans laquelle tu AVANÇAIS
-    		        // donc il faut que la direction opposée de last corresponde à celle de first
-    		        switch (lastDirection) {
-    		            case "right":
-    		                sigLast = last.getRightSignature();
-    		                sigFirst = first.getLeftSignature();
-    		                break;
-    		            case "left":
-    		                sigLast = last.getLeftSignature();
-    		                sigFirst = first.getRightSignature();
-    		                break;
-    		            case "top":
-    		                sigLast = last.getTopSignature();
-    		                sigFirst = first.getBottomSignature();
-    		                break;
-    		            case "bottom":
-    		                sigLast = last.getBottomSignature();
-    		                sigFirst = first.getTopSignature();
-    		                break;
-    		        }
-
-    		        if (sigLast != null && sigLast.equals(sigFirst)) {
-    		            return true;
-    		        } else {
-    		            return false; 
-    		        }
-    			}
-    			else {
-    				return false;
-    			}
-    		}
-    		
-    		for (Piece p:candidats2.getPieces()) {
-    			p.setState(true);
-    			finalList.addPiece(p);
-    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
-    			if (success) { return true;}
-    			else {
-    				p.setState(false);
-    				finalList.removePiece(p);
-    			}
-    		}
-    		return false;		
-		
-	}
-	private String construireCleEtat(ListePieces finalList, String direction) {
-	    return direction + "|" + finalList.getPieces().stream()
-		        .map(Piece::getNom)
-		        .collect(Collectors.joining(","));
-		}
-	
-	private ListePieces filterByRightSide(ListePieces candidats, String oppositeDirection, String signature) {
-		 ListePieces result = new ListePieces();
-
-		    for (Piece p : candidats.getPieces()) {
-
-		        String candidateSignature = null;
-
-		        switch (oppositeDirection) {
-		            case "left":
-		                candidateSignature = p.getLeftSignature();
-		                break;
-		            case "right":
-		                candidateSignature = p.getRightSignature();
-		                break;
-		            case "top":
-		                candidateSignature = p.getTopSignature();
-		                break;
-		            case "bottom":
-		                candidateSignature = p.getBottomSignature();
-		                break;
-		            default:
-		                continue; // Direction non reconnue
-		        }
-		        if (candidateSignature != null && !candidateSignature.isEmpty() && candidateSignature.equals(signature)) {
-		            result.addPiece(p);
-		        }
-	} return result;
-	}
-	
-	private ListePieces filterByUsed(ListePieces candidats) {
-		ListePieces result = new ListePieces();
-		
-		for (Piece p: candidats.getPieces()) {
-			if(!p.getState()) {
-				result.addPiece(p);
-			}
-		}
-		return result;
-	}
-	
-	private String changeDirection(String direction,Piece p1) {
-		if(p1!=null) {
-			String[] directions=p1.directionCorners();
-			for (String s: directions) {
-				if(s!=direction) {
-					return s;
-				}
-			}
-		}
-		return null;
-	}
 	
 	
-	private Boolean resolveInnerIteratif(Puzzle puzzle, HashMap<String, ListePieces> hm, int ymax, int xmax) {
-	    class State {
-	        int x, y;
-	        Iterator<Piece> candidates;
-	        Piece current;
-
-	        State(int x, int y, ListePieces candidates) {
-	            this.x = x;
-	            this.y = y;
-	            this.candidates = candidates.getPieces().iterator();
-	        }
-	    }
-
-	    Deque<State> stack = new ArrayDeque<>();
-	    int x = 1, y = 1;
-
-	    while (true) {
-	        if (x >= xmax) return true;
-	        if (y >= ymax) {
-	            x++;
-	            y = 1;
-	            continue;
-	        }
-
-	        String leftSig = puzzle.getCase(x - 1, y).getRightSignature();
-	        String topSig = puzzle.getCase(x, y - 1).getBottomSignature();
-	        String bottomSig = (y + 1 == ymax) ? puzzle.getCase(x, y + 1).getTopSignature() : null;
-	        String rightSig = (x + 1 == xmax) ? puzzle.getCase(x + 1, y).getLeftSignature() : null;
-
-	        ListePieces candidats = getCandidatsBySignature(hm, leftSig, topSig, bottomSig, rightSig);
-	        if (candidats.isEmpty()) {
-	            if (stack.isEmpty()) return false;
-	            State prev = stack.pop();
-	            prev.current.setState(false);
-	            puzzle.setCase(null, prev.x, prev.y);
-	            x = prev.x;
-	            y = prev.y;
-	            continue;
-	        }
-
-	        ListePieces filtered = filterByUsed(candidats);
-	        if (filtered.isEmpty()) {
-	            if (stack.isEmpty()) return false;
-	            State prev = stack.pop();
-	            prev.current.setState(false);
-	            puzzle.setCase(null, prev.x, prev.y);
-	            x = prev.x;
-	            y = prev.y;
-	            continue;
-	        }
-
-	        filtered.sortByPixelScoreInner(
-	            puzzle.getCase(x - 1, y), puzzle.getCase(x, y - 1),
-	            puzzle.getCase(x, y + 1), puzzle.getCase(x + 1, y)
-	        );
-
-	        State state = new State(x, y, filtered);
-	        boolean placed = false;
-	        while (state.candidates.hasNext()) {
-	            Piece p = state.candidates.next();
-	            if (!p.getState()) {
-	                p.setState(true);
-	                puzzle.setCase(p, x, y);
-	                state.current = p;
-	                stack.push(state);
-	                y++;
-	                placed = true;
-	                break;
-	            }
-	        }
-
-	        if (!placed) {
-	            if (stack.isEmpty()) return false;
-	            State prev = stack.pop();
-	            prev.current.setState(false);
-	            puzzle.setCase(null, prev.x, prev.y);
-	            x = prev.x;
-	            y = prev.y;
-	        }
-	    }
-	}
 	
 	
-	private ListePieces getCandidatsBySignature(HashMap<String, ListePieces> hm, String leftSig, String topSig,
-			String bottomSig,String rightSig) {
-		 	ListePieces left = hm.getOrDefault(leftSig, new ListePieces());
-		    ListePieces top = hm.getOrDefault(topSig, new ListePieces());
-		    ListePieces bottom = bottomSig != null ? hm.getOrDefault(bottomSig, new ListePieces()) : null;
-		    ListePieces right = rightSig != null ? hm.getOrDefault(rightSig, new ListePieces()) : null;
-
-		    Set<Piece> filteredLeft = new HashSet<>();
-		    for (Piece p : left.getPieces()) {
-		        if (p.getLeftSignature() != null && p.getLeftSignature().equals(leftSig)) {
-		            filteredLeft.add(p);
-		        }
-		    }
-
-		    Set<Piece> filteredTop = new HashSet<>();
-		    for (Piece p : top.getPieces()) {
-		        if (p.getTopSignature() != null && p.getTopSignature().equals(topSig)) {
-		            filteredTop.add(p);
-		        }
-		    }
-
-		    Set<Piece> filteredBottom = null;
-		    if (bottom != null) {
-		        filteredBottom = new HashSet<>();
-		        for (Piece p : bottom.getPieces()) {
-		            if (p.getBottomSignature() != null && p.getBottomSignature().equals(bottomSig)) {
-		                filteredBottom.add(p);
-		            }
-		        }
-		    }
-
-		    Set<Piece> filteredRight = null;
-		    if (right != null) {
-		        filteredRight = new HashSet<>();
-		        for (Piece p : right.getPieces()) {
-		            if (p.getRightSignature() != null && p.getRightSignature().equals(rightSig)) {
-		                filteredRight.add(p);
-		            }
-		        }
-		    }
-		    Set<Piece> intersection = new HashSet<>(filteredLeft);
-		    intersection.retainAll(filteredTop);
-		    if (filteredRight != null) intersection.retainAll(filteredRight);
-		    if (filteredBottom != null) intersection.retainAll(filteredBottom);
-
-		    // On retourne une ListePieces contenant les candidats valides
-		    ListePieces result = new ListePieces();
-		    for (Piece p : intersection) {
-		        result.addPiece(p);
-		    }
-
-		    return result;
-	}
 
 
-
+	/**
+	 * Afficher le puzzle résolu (ou pas) ainsi que différentes informations et options sur une fenêtre graphique
+	 * @param puzzle
+	 * @param tentatives
+	 * @param message
+	 */
 	public void ouvrirFenetrePuzzle(Puzzle puzzle, ArrayList<String> tentatives, String message) {
 
 	    Stage puzzleStage = new Stage();
 
-	    if (message != null && !message.isEmpty()) {
-	        // Afficher uniquement le message dans une fenêtre simple
+	    if (message != null && !message.isEmpty() && !message.equals("Arrêt forcé : trop d'itérations, boucle infinie détectée.")) {
+	        
 	        VBox messageBox = new VBox();
 	        messageBox.setPadding(new Insets(20));
 	        messageBox.setAlignment(Pos.CENTER);
@@ -587,7 +337,7 @@ public class Main extends Application {
 	        puzzleStage.setScene(messageScene);
 	        puzzleStage.setTitle("Message");
 	        puzzleStage.show();
-	        return; // Sortir de la méthode après avoir affiché le message
+	        return; 
 	    }
 
 	    BorderPane root = new BorderPane();
@@ -604,21 +354,58 @@ public class Main extends Application {
 
 	    double ratio = (TailleX > TailleY) ? 1000.0 / TailleX : 1000.0 / TailleY;
 
+	    
+	    double puzzleWidth = TailleX * ratio;
+	    double puzzleHeight = TailleY * ratio;
+
+	    
+	    Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+	    double maxWidth = screenBounds.getWidth() * 0.9;  
+	    double maxHeight = screenBounds.getHeight() * 0.9; 
+
+	    
+	    double rightPaneWidth = 300;
+
+	    
+	    double windowWidth = Math.min(puzzleWidth + rightPaneWidth, maxWidth);
+	    double windowHeight = Math.min(puzzleHeight + 50, maxHeight);
+
+	    
+	    if (puzzleWidth + rightPaneWidth > maxWidth) {
+	        double availableWidthForPuzzle = maxWidth - rightPaneWidth;
+	        double scaleX = availableWidthForPuzzle / puzzleWidth;
+	        ratio *= scaleX;
+	        puzzleWidth = TailleX * ratio;
+	        puzzleHeight = TailleY * ratio;
+	    }
+
+	    if (puzzleHeight + 50 > maxHeight) {
+	        double scaleY = (maxHeight - 50) / puzzleHeight;
+	        ratio *= scaleY;
+	        puzzleWidth = TailleX * ratio;
+	        puzzleHeight = TailleY * ratio;
+	    }
+
+	    
+	    windowWidth = Math.min(puzzleWidth + rightPaneWidth, maxWidth);
+	    windowHeight = Math.min(puzzleHeight + 50, maxHeight);
+
+	    
 	    double yplus = 0;
 	    int x = 0, y = 0;
+
+	    puzzlePane.getChildren().clear();
 
 	    for (int i = 0; i < puzzle.getL(); i++) {
 	        for (int j = 0; j < puzzle.getl(); j++) {
 	            Piece piece = puzzle.getCase(j, i);
-	    		//double ratio = 0.3;
-	    		if (piece == null || piece.getImg() == null) continue;
-	    		
-	    		try {
-	    			BufferedImage bufferedImage = piece.getImg();
-	    			WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+	            if (piece == null || piece.getImg() == null) continue;
+	            try {
+	                BufferedImage bufferedImage = piece.getImg();
+	                WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
 	                ImageView imageView = new ImageView(fxImage);
-	                
-					imageView.setFitWidth(Math.round(fxImage.getWidth() * ratio));
+
+	                imageView.setFitWidth(Math.round(fxImage.getWidth() * ratio));
 	                imageView.setFitHeight(Math.round(fxImage.getHeight() * ratio));
 	                imageView.setPreserveRatio(false);
 
@@ -628,7 +415,6 @@ public class Main extends Application {
 	                int y1 = tab[0][1];
 	                int y2 = tab[2][1];
 
-	                // Positionnement
 	                imageView.setLayoutX(Math.round(x - (x1 * ratio)));
 	                imageView.setLayoutY(Math.round(y - (y1 * ratio)));
 
@@ -651,7 +437,7 @@ public class Main extends Application {
 	        }
 	    }
 
-	    // Liste des tentatives avec label
+	    
 	    Label tentativeLabel = new Label("Tentatives");
 	    tentativeLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
 
@@ -664,11 +450,11 @@ public class Main extends Application {
 	    tentativeList.setPrefWidth(250);
 	    tentativeList.setPrefHeight(400);
 
-	    // Nombre de tentatives
+	    
 	    Label nbTentativesLabel = new Label("Nombre de tentatives : " + tentatives.size());
 	    nbTentativesLabel.setStyle("-fx-padding: 10px; -fx-font-size: 14px;");
 
-	    // Bouton pour enregistrer l'image
+	   
 	    Button saveButton = new Button("Enregistrer l'image");
 	    saveButton.setOnAction(e -> {
 	        WritableImage snapshot = puzzlePane.snapshot(new SnapshotParameters(), null);
@@ -693,19 +479,30 @@ public class Main extends Application {
 	    );
 	    dimensionLabel.setStyle("-fx-padding: 5; -fx-font-size: 14px; -fx-font-weight: bold;");
 
-	    // Mise en page droite
+	    
 	    VBox rightPane = new VBox(10, dimensionLabel, tentativeLabel, tentativeList, nbTentativesLabel, saveButton);
 	    rightPane.setPadding(new Insets(10));
+	    
+	    VBox topPane = new VBox();
+	    topPane.setPadding(new Insets(10));
+	    topPane.setSpacing(10);
 
-	    // ScrollPane pour le puzzle si grand
+	    if (message != null && !message.isEmpty()) {
+	        Label errorLabel = new Label(message);
+	        errorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 14px;");
+	        topPane.getChildren().add(errorLabel);
+	    }
+
+	   
 	    ScrollPane scrollPane = new ScrollPane(puzzlePane);
 	    scrollPane.setFitToWidth(true);
 	    scrollPane.setFitToHeight(true);
 
-	    root.setCenter(scrollPane);
+	    topPane.getChildren().add(scrollPane);
+	    root.setCenter(topPane);
 	    root.setRight(rightPane);
 
-	    Scene scene = new Scene(root, TailleX * ratio + 300, TailleY * ratio + 50);
+	    Scene scene = new Scene(root, windowWidth, windowHeight);
 	    puzzleStage.setScene(scene);
 	    puzzleStage.setTitle("Puzzle Résolu");
 	    puzzleStage.show();

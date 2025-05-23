@@ -15,39 +15,61 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-
+/**
+ * Cette classe représente une pièce du puzzle.
+ * Elle contient des informations à propos de l'image, du fichier à partir de laquelle elle est crée, ainsi que des informations
+ * sur chaque bord comme la signature, la séquence de déplacement d'une matrice 2*2 qui sert à la signature, ou encore une liste de triplets rgb
+ * des pixels sur la bordure
+ * 
+ */
 public class Piece {
 
-
+	/**	 img stockée dans la classe BufferedImage */
 	private BufferedImage img;
 
-	
+	/** fichier servant à la création de l'image */
 	private File fichier;
 
-
+	/** nom de la piece*/
 	private String nom;
-
+	/** signature, sequence et liste de tableaux d'entier contenant des triplets rgb pour le côté droit */
     private String top;
     private String seqTop;
     private ArrayList<int[]> topScore;
+    /** idem pour le bas */
     private String bottom;
     private String seqBottom;
     private ArrayList<int[]> bottomScore;
+    /** idem pour la gauche */
     private String left;
     private String seqLeft;
     private ArrayList<int[]> leftScore;
+    /** idem pour la droite */
     private String right;
     private String seqRight;
     private ArrayList<int[]> rightScore;
+    /** attribut qui indique si la pièce est déjà utilisée ou non dans la résolution du puzzle */
     private boolean used;
+    /** entier servant à compter le nombre de bords (côtés entièrement plats) de la pièce de puzzle*/
     private int count;
+    /** entier indiquant la rotation actuelle de la pièce*/
     private int rotation;
+    /** tableau d'entiers 4*2 qui stocke les coins "réels" de la pièce */
     private int[][] corners;
+   
+    /**
+     * Renvoie le nom de la pièce
+     * @return l'attribut nom
+     */
 	public String getNom() {
         return nom;
     }
 
-	
+	/**
+	 * Constructeur de la classe pièce afin d'initialiser tous les attributs et de calculer les signatures
+	 * ainsi que toutes les informations relatives aux côtés
+	 * @param fichier,nom
+	 */
 	public Piece(File fichier,String nom) throws Exception {
         try {
 
@@ -95,6 +117,11 @@ public class Piece {
         }
     }
 
+	/**
+	 * Calcule les coins réels de l'image
+	 * @param img, l'image à considérer
+	 * @return un tableau 4*2 contenant ces coins
+	 */
 	public static int[][] corners(BufferedImage img){
 		int height =img.getHeight();
 		int width=img.getWidth();
@@ -154,6 +181,13 @@ public class Piece {
 		return tab;
 		
 	}
+	
+	/*
+	 * Permet de calculer les signatures et d'enregistrer les informations sur la couleur de chaque côté
+	 * 
+	 * @param une chaine de caractère indiquant le côté à considérer
+	 * @param les coordonnées du coin duquel on part ainsi que les coordonnées du coin jusqu'où on doit aller
+	 */
 	public void setSide(String side, int x, int y, int x1, int y1) throws Exception {
 			if(side!="") {
 				int[][] matrix = new int[2][2];
@@ -657,16 +691,32 @@ public class Piece {
 				
 	}
 }
-	
+	/**
+	 * Permet d'accéder à la variable count pour compter le nombre de côtés plats
+	 * @return l'attribut count
+	 */
 	public int getCount() {
 		return this.count;
 	}
+	
+	/**
+	 * Sert à indiquer l'état de la pièce, si elle est déjà utilisée ou non dans la résolution du puzzle
+	 * @return l'attribut used
+	 */
 	public Boolean getState() {
 		return this.used;
 	}
+	/**
+	 * Permet de modifier l'état de la pièce
+	 * @param une valeur booléenne, true ou false
+	 */
 	public void setState(Boolean state) {
 		this.used=state;
 	}
+	/**
+	 * indique si la pièce est une bordure
+	 * @return true ou false
+	 */
 	public Boolean isABorder() {
 		if(this.count==1) {
 			return true;
@@ -675,7 +725,10 @@ public class Piece {
 			return false;
 		}
 	}
-	
+	/**
+	 * indique si la pièce est un coin
+	 * @return true ou false
+	 */
 	public Boolean isACorner() {
 		if(this.count==2) {
 			return true;
@@ -684,34 +737,69 @@ public class Piece {
 			return false;
 		}
 	}
-	
+	/**
+	 * permet d'accéder à la signature du côté en haut
+	 * @return la signature sous forme de chaine de caractères
+	 */
 	public String getTopSignature() {
 		return this.top; 
 	}
+	/**
+	 * permet d'accéder à la signature du côté gauche
+	 * @return la signature sous forme de chaine de caractères
+	 */
 	public String getLeftSignature() {
 		return this.left; 
 	}
+	/**
+	 * permet d'accéder à la signature du côté droit
+	 * @return la signature sous forme de chaine de caractères
+	 */
 	public String getRightSignature() {
 		return this.right; 
 	}
+	/**
+	 * permet d'accéder à la signature du côté en bas
+	 * @return la signature sous forme de chaine de caractères
+	 */
 	public String getBottomSignature() {
 		return this.bottom; 
 	}
+	/**
+	 * permet d'accéder à la séquence de déplacement de la matrice 2*2 sur le bord en haut
+	 * @return la séquence sous forme de chaine de caractères
+	 */
 	
 	public String getSeqTop() {
 		return seqTop;
 	}
+	/**
+	 * permet d'accéder à la séquence de déplacement de la matrice 2*2 sur le bord droit
+	 * @return la séquence sous forme de chaine de caractères
+	 */
 	public String getSeqRight() {
 		return seqRight;
 	}
+	/**
+	 * permet d'accéder à la séquence de déplacement de la matrice 2*2 sur le bord gauche
+	 * @return la séquence sous forme de chaine de caractères
+	 */
 	public String getSeqLeft() {
 		return seqLeft;
 	}
+	/**
+	 * permet d'accéder à la séquence de déplacement de la matrice 2*2 sur le bord en bas
+	 * @return la séquence sous forme de chaine de caractères
+	 */
 	public String getSeqBottom() {
 		return seqBottom;
 	}
 	
-
+	/**
+	 * vérifie si la chaine de caractère contient toujours un seul et même caractère
+	 * @param str, la chaine à considérer
+	 * @return un booléan
+	 */
 	public static boolean isSingleCharRepeatedUntilUnderscore(String str) {
         if (str == null || str.isEmpty()) return false;
 
@@ -730,7 +818,11 @@ public class Piece {
     }
 	
 	
-	
+	/**
+	 * sert à transformer l'image en matrice de pixels, avec 0 là où les pixels sont transparents et 1 là où ils ne le sont pas
+	 * @param img
+	 * @return la matrice représentant l'image
+	 */
 	private int[][] imageToMatrix(BufferedImage img){
 		int[][] matrix= new int[img.getHeight()][img.getWidth()];
 		for (int y=0; y<img.getHeight(); y++) {
@@ -744,6 +836,10 @@ public class Piece {
 		return matrix;
 	}
 	
+	/**
+	 * détermine les directions possible d'un coin
+	 * @return un tableau de chaine de caractères de taille 2
+	 */
 	public String[] directionCorners() {
 		String[] s=new String[2];
 		if(!isSingleCharRepeatedUntilUnderscore(seqRight)) {
@@ -760,7 +856,11 @@ public class Piece {
 		}
 		return s;
 	}
-	
+	/**
+	 * 
+	 * @param direction
+	 * @return la direction opposée sous forme de chaîne de caractères
+	 */
 	public String oppositeDirection(String direction) {
 		if(direction.equals("right")) {
 			return "left";
@@ -779,6 +879,13 @@ public class Piece {
 		}
 	}
 	
+	/**
+	 * Permet la rotation de la pièce et modifie les attributs concernés
+	 * @param input
+	 * @param output
+	 * @param name
+	 * @throws Exception
+	 */
 	public void rotate90(File input,File output,String name) throws Exception {
 	    rotation = (rotation + 90) % 360;
 
@@ -808,7 +915,13 @@ public class Piece {
 
 	    }
 	}
-
+	/**
+	 * tourne l'image au niveau des pixels en transposant la grille de pixels de l'image
+	 * @param input
+	 * @param output
+	 * @return la nouvelle image sous une instance de BufferedImage
+	 * @throws IOException
+	 */
 	public static BufferedImage rotate90CounterClockwise(File input,File output) throws IOException {
 		 // Chargement de l'image
         ImageInputStream iis = ImageIO.createImageInputStream(input);
@@ -834,46 +947,78 @@ public class Piece {
 
 
 
-
+/**
+ * 
+ * @return la rotation actuelle de l'image
+ */
     public int getRotation() {
         return rotation;
     }
 
 
-
+/**
+ * 
+ * @return le tableau contenant les coins de l'image
+ */
 	public int[][] getCorners() {
 		return corners;
 	}
-	
+/**
+ * 
+ * @return img, l'image contenue dans la classe BufferedImage
+ */
 	public BufferedImage getImg() {
 		return img;
 	}
 
-
+/**
+ * 
+ * @return le fichier image
+ */
 	public File getFichier() {
 		return fichier;
 	}
 
-
+/**
+ * 
+ * @return la liste de triplet rgb pour chaque pixel sur le bord haut
+ */
 	public ArrayList<int[]> getTopScore() {
 		return topScore;
 	}
-
+	/**
+	 * 
+	 * @return la liste de triplet rgb pour chaque pixel sur le bord en bas
+	 */
 
 	public ArrayList<int[]> getBottomScore() {
 		return bottomScore;
 	}
-
+	/**
+	 * 
+	 * @return la liste de triplet rgb pour chaque pixel sur le bord gauche
+	 */
 
 	public ArrayList<int[]> getLeftScore() {
 		return leftScore;
 	}
-
+	/**
+	 * 
+	 * @return la liste de triplet rgb pour chaque pixel sur le bord droit
+	 */
 
 	public ArrayList<int[]> getRightScore() {
 		return rightScore;
 	}
-	// Méthode pour savoir si la liste contient un triplet [r,g,b]
+	
+	/**
+	 * Vérifie si le triplet rgb est déjà enregistré dans le tableau
+	 * @param list
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return true ou false
+	 */
 	private boolean containsRGB(ArrayList<int[]> list, int r, int g, int b) {
 		if(list!=null) {
 	    for (int[] rgb : list) {
