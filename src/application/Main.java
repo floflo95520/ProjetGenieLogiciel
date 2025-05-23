@@ -296,10 +296,7 @@ public class Main extends Application {
     		ListePieces candidats=hm.get(Signature);
     		ListePieces candidats1=filterByRightSide(candidats, oppositeDirection1, Signature);
     		ListePieces candidats2=filterByUsed(candidats1);
-    		System.out.println("Candidats pour :"+p1.getNom());
-    		for(Piece p: candidats.getPieces()) {
-    			System.out.println(p.getNom());
-    		}
+
     		
     	if(candidats2.getPieces().size()>1) {
     			TreeMap<Double, Piece> scoreMap = new TreeMap<>();
