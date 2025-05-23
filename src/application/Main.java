@@ -5,14 +5,18 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -150,7 +154,7 @@ public class Main extends Application {
 	                        		
 	                        	
 	                        		
-	                        		
+	                        		Set<String> visitedStates1 = new HashSet<>();
 	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
 	                        		ArrayList<String> directions = new ArrayList<>();
@@ -163,7 +167,7 @@ public class Main extends Application {
 	                        		Puzzle puzzle=new Puzzle();
 	                        		int expectedSize = pieceCorners.getPieces().size() + pieceBorders.getPieces().size();
 	                        		try {
-	                        			ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize);
+	                        			ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
 	                        		}
 	                        		catch (Exception e2) {
 	                        			String errorMessage="Erreur lors de la résolution du bord du puzzle.";
@@ -234,7 +238,7 @@ public class Main extends Application {
 	                        			}
 	                        			String errorMessage=null;
 	                        			try {
-	                        				resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
+	                        				resolveInnerIteratif(puzzle,signatureMap,puzzle.getL()-1,puzzle.getl()-1);
 	                        			} catch (StackOverflowError error) {
 	                        			    errorMessage="Erreur lors de la résolution de l'intérieur. Veuillez reessayer plus tard.";
 	                        			    // ici, tu peux gérer le cas, comme arrêter la récursion, alerter l'utilisateur, etc.
@@ -266,8 +270,13 @@ public class Main extends Application {
 	}
 	
 	
-	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize) {
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize,Set<String> visitedStates1) {
 		Piece p1=finalList.getPieces().getLast();
+		String cleEtat = construireCleEtat(finalList, direction);
+		if (visitedStates1.contains(cleEtat)) {
+		    return false;
+		}
+		visitedStates1.add(cleEtat);
     		String Signature = null;
     		String oppositeDirection=p1.oppositeDirection(direction);
     		if(pieceCorners.containsPiece(p1)) {
@@ -348,7 +357,7 @@ public class Main extends Application {
     		for (Piece p:candidats2.getPieces()) {
     			p.setState(true);
     			finalList.addPiece(p);
-    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize);
+    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
     			if (success) { return true;}
     			else {
     				p.setState(false);
@@ -358,6 +367,11 @@ public class Main extends Application {
     		return false;		
 		
 	}
+	private String construireCleEtat(ListePieces finalList, String direction) {
+	    return direction + "|" + finalList.getPieces().stream()
+		        .map(Piece::getNom)
+		        .collect(Collectors.joining(","));
+		}
 	
 	private ListePieces filterByRightSide(ListePieces candidats, String oppositeDirection, String signature) {
 		 ListePieces result = new ListePieces();
@@ -412,45 +426,86 @@ public class Main extends Application {
 	}
 	
 	
-	private Boolean resolveInner(Puzzle puzzle, HashMap<String, ListePieces> hm, int y, int x, int ymax, int xmax,ArrayList<String> tentatives) {
-		
-		
-		if (x >= xmax) {
-	        return true; // succès
+	private Boolean resolveInnerIteratif(Puzzle puzzle, HashMap<String, ListePieces> hm, int ymax, int xmax) {
+	    class State {
+	        int x, y;
+	        Iterator<Piece> candidates;
+	        Piece current;
+
+	        State(int x, int y, ListePieces candidates) {
+	            this.x = x;
+	            this.y = y;
+	            this.candidates = candidates.getPieces().iterator();
+	        }
 	    }
-		
-		if(y>=ymax) {
-			return resolveInner(puzzle,hm,1,x+1,ymax,xmax,tentatives);
-		}
-		 String leftSig = puzzle.getCase(x-1, y).getRightSignature();
-		 String topSig = puzzle.getCase(x, y-1).getBottomSignature();
-		 String bottomSig=null;
-		 String rightSig=null;
-		 if(y+1==ymax) {
-			 bottomSig =puzzle.getCase(x,y+1).getTopSignature();
-		 }
-		 if(x+1==xmax) {
-			 rightSig=puzzle.getCase(x+1, y).getLeftSignature();
-		 }
-		 ListePieces candidats=getCandidatsBySignature(hm,leftSig,topSig,bottomSig,rightSig);
-		 ListePieces filteredCandidates=filterByUsed(candidats);
-		// filteredCandidates.sortByPixelScoreInner(puzzle.getCase(x-1, y),puzzle.getCase(x, y-1),puzzle.getCase(x, y+1),puzzle.getCase(x+1, y));
-		 
-		 for (Piece p:filteredCandidates.getPieces()) {
-			 p.setState(true);
-			 puzzle.setCase(p, x, y);
-			 
-			 if (resolveInner(puzzle, hm, y + 1, x, ymax, xmax,tentatives)) {
-		            return true; // Succès, on remonte
-		        }
 
+	    Deque<State> stack = new ArrayDeque<>();
+	    int x = 1, y = 1;
 
-		        p.setState(false);
-		        puzzle.setCase(null,x, y);
-		 }
-		 
-		tentatives.add("tentative#"+x+y); 
-		return false;
+	    while (true) {
+	        if (x >= xmax) return true;
+	        if (y >= ymax) {
+	            x++;
+	            y = 1;
+	            continue;
+	        }
+
+	        String leftSig = puzzle.getCase(x - 1, y).getRightSignature();
+	        String topSig = puzzle.getCase(x, y - 1).getBottomSignature();
+	        String bottomSig = (y + 1 == ymax) ? puzzle.getCase(x, y + 1).getTopSignature() : null;
+	        String rightSig = (x + 1 == xmax) ? puzzle.getCase(x + 1, y).getLeftSignature() : null;
+
+	        ListePieces candidats = getCandidatsBySignature(hm, leftSig, topSig, bottomSig, rightSig);
+	        if (candidats.isEmpty()) {
+	            if (stack.isEmpty()) return false;
+	            State prev = stack.pop();
+	            prev.current.setState(false);
+	            puzzle.setCase(null, prev.x, prev.y);
+	            x = prev.x;
+	            y = prev.y;
+	            continue;
+	        }
+
+	        ListePieces filtered = filterByUsed(candidats);
+	        if (filtered.isEmpty()) {
+	            if (stack.isEmpty()) return false;
+	            State prev = stack.pop();
+	            prev.current.setState(false);
+	            puzzle.setCase(null, prev.x, prev.y);
+	            x = prev.x;
+	            y = prev.y;
+	            continue;
+	        }
+
+	        filtered.sortByPixelScoreInner(
+	            puzzle.getCase(x - 1, y), puzzle.getCase(x, y - 1),
+	            puzzle.getCase(x, y + 1), puzzle.getCase(x + 1, y)
+	        );
+
+	        State state = new State(x, y, filtered);
+	        boolean placed = false;
+	        while (state.candidates.hasNext()) {
+	            Piece p = state.candidates.next();
+	            if (!p.getState()) {
+	                p.setState(true);
+	                puzzle.setCase(p, x, y);
+	                state.current = p;
+	                stack.push(state);
+	                y++;
+	                placed = true;
+	                break;
+	            }
+	        }
+
+	        if (!placed) {
+	            if (stack.isEmpty()) return false;
+	            State prev = stack.pop();
+	            prev.current.setState(false);
+	            puzzle.setCase(null, prev.x, prev.y);
+	            x = prev.x;
+	            y = prev.y;
+	        }
+	    }
 	}
 	
 	
