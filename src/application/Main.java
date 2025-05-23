@@ -255,7 +255,9 @@ public class Main extends Application {
 	                        		for(String s: tentatives) {
 	                        			System.out.println(s.toString());
 	                        		}
+
 	                        		ouvrirFenetrePuzzle(puzzle);
+
 	                        		}
 	                        	
 	                       
@@ -617,7 +619,7 @@ public class Main extends Application {
 	    }
 	    
 	    System.out.println("tailleX " + TailleX + "tailleY" + TailleY + "ratio: " +ratio);
-	    Scene scene = new Scene(puzzlePane, TailleX * ratio + 100, TailleY * ratio + 100);
+	    Scene scene = new Scene(puzzlePane, TailleX * ratio + 10, TailleY * ratio + 10);
 	    puzzleStage.setScene(scene);
 	    puzzleStage.setTitle("Puzzle");
 	    puzzleStage.show();

@@ -18,10 +18,12 @@ import javax.imageio.stream.ImageInputStream;
 
 public class Piece {
 
+
 	private BufferedImage img;
 
 	
 	private File fichier;
+
 
 	private String nom;
 
@@ -49,14 +51,18 @@ public class Piece {
 	public Piece(File fichier,String nom) throws Exception {
         try {
 
-
         	this.fichier=fichier;
             this.img = ImageIO.read(new File(fichier.getPath()));  // Charge l'image à partir d'un fichier
+
             topScore=new ArrayList<>();
             rightScore=new ArrayList<>();
             bottomScore=new ArrayList<>();
             leftScore=new ArrayList<>();
+
             int[][] tab=corners(this.img);
+
+
+ 
 
             this.nom=nom;
             this.corners=tab;
