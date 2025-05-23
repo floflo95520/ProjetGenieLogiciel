@@ -139,7 +139,7 @@ public class Main extends Application {
 	                        		
 	                        	
 	                        		
-	                        		Set<String> visitedStates1 = new HashSet<>();
+	                        		
 	                        		ListePieces finalList= new ListePieces();
 	                        		ArrayList<String> tentatives = new ArrayList<>();
 	                        		ArrayList<String> directions = new ArrayList<>();
@@ -152,7 +152,7 @@ public class Main extends Application {
 	                        		Puzzle puzzle=new Puzzle();
 	                        		int expectedSize = pieceCorners.getPieces().size() + pieceBorders.getPieces().size();
 	                        		try {
-	                        			finalList.ResolveBorder(hm,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
+	                        			finalList.ResolveBorder(hm,direction,pieceCorners,pieceBorders,directions,expectedSize);
 	                        		}
 	                        		catch (Exception e2) {
 	                        			String errorMessage="Erreur lors de la résolution du bord du puzzle.";

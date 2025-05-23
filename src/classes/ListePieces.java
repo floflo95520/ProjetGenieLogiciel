@@ -115,8 +115,8 @@ public class ListePieces {
     
     /**
      * Trie la liste des candidats en fonction de leur score de pixel avec la pièce de référence
-     * @param p1
-     * @param direction
+     * @param p1 La pièce de référence à considérer
+     * @param direction la direction dans laquelle on se dirige pour remplir le bord
      */
     public void sortByPixelScoreDifference(Piece p1, String direction) {
         TreeMap<Double, List<Piece>> scoreMap = new TreeMap<>();
@@ -224,10 +224,10 @@ public class ListePieces {
     }
 /**
  * Sert à trier la liste des candidats par leur score de pixel avec les pièces voisines
- * @param left
- * @param top
- * @param bottom
- * @param right
+ * @param left pièce de gauche
+ * @param top pièce du haut
+ * @param bottom pièce du bas
+ * @param right pièce de droite
  */
     public void sortByPixelScoreInner(Piece left, Piece top, Piece bottom, Piece right) {
         TreeMap<Double, List<Piece>> scoreMap = new TreeMap<>();
@@ -257,8 +257,17 @@ public class ListePieces {
         this.pieces = sortedList;
     }
 
-    
-    public Boolean ResolveBorder(HashMap<String, ListePieces> hm, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize,Set<String> visitedStates1) {
+    /**
+     * Fonction qui sert à remplir le bord du puzzle
+     * @param hm contient des signatures auxquelles sont associées de listes de pièces
+     * @param direction indique la direction dans laquelle on remplit le bord
+     * @param pieceCorners liste des coins
+     * @param pieceBorders liste des bords
+     * @param directions liste des directions enregistrées lors du remplissage
+     * @param expectedSize taille de la liste des pièces assemblées attendues à la fin du remplissage
+     * @return boolean pour indiquer si le remplissage est correct au fur et à mesure
+     */
+    public Boolean ResolveBorder(HashMap<String, ListePieces> hm, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize) {
 		Piece p1=this.getPieces().getLast();
 		
     		String Signature = null;
@@ -339,7 +348,7 @@ public class ListePieces {
     		for (Piece p:candidats2.getPieces()) {
     			p.setState(true);
     			this.addPiece(p);
-    			Boolean success=ResolveBorder(hm,direction,pieceCorners,pieceBorders,directions,expectedSize,visitedStates1);
+    			Boolean success=ResolveBorder(hm,direction,pieceCorners,pieceBorders,directions,expectedSize);
     			if (success) { return true;}
     			else {
     				p.setState(false);
@@ -350,7 +359,14 @@ public class ListePieces {
 		
 	}
 
-	
+	/**
+	 * fonction qui filtre les candidats selon s'ils ont la signature sur le bon côté de la pièce
+	 * @param candidats liste des candidats à considérer
+	 * @param oppositeDirection direction opposée pour regarder la signature sur les candidats
+	 * @param signature celle considérée pour filtrer les candidats
+	 * @return result la liste des pieces filtrées
+	 */
+    
 	private ListePieces filterByRightSide(ListePieces candidats, String oppositeDirection, String signature) {
 		 ListePieces result = new ListePieces();
 
@@ -380,6 +396,11 @@ public class ListePieces {
 	} return result;
 	}
 	
+	/**
+	 * fonction qui sert à filtrer la liste des candidats selon s'ils ont été déjà utilisés dans le remplissage ou non
+	 * @param candidats liste à considérer
+	 * @return result la liste filtrée
+	 */
 	public ListePieces filterByUsed(ListePieces candidats) {
 		ListePieces result = new ListePieces();
 		
@@ -390,7 +411,12 @@ public class ListePieces {
 		}
 		return result;
 	}
-	
+	/**
+	 * fonction qui lorsqu'on arrive sur un coin, la direction change et devient l'autre direction possible du coin
+	 * @param direction celle actuelle
+	 * @param p1 le coin à considérer
+	 * @return s nouvelle direction
+	 */
 	private String changeDirection(String direction,Piece p1) {
 		if(p1!=null) {
 			String[] directions=p1.directionCorners();

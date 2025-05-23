@@ -708,7 +708,7 @@ public class Piece {
 	}
 	/**
 	 * Permet de modifier l'état de la pièce
-	 * @param une valeur booléenne, true ou false
+	 * @param state une valeur booléenne, true ou false
 	 */
 	public void setState(Boolean state) {
 		this.used=state;
