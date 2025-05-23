@@ -112,20 +112,29 @@ public class ListePieces {
     }
 
     public void sortByPixelScoreDifference(Piece p1, String direction) {
-        TreeMap<Double, Piece> scoreMap = new TreeMap<>();
+        TreeMap<Double, List<Piece>> scoreMap = new TreeMap<>();
 
         for (Piece other : this.pieces) {
-           double diff = scoreDifference(p1, other, direction);
-           System.out.println("score entre : "+p1.getNom()+ " et " + other.getNom());
+            double diff = scoreDifference(p1, other, direction);
+            System.out.println("score entre : " + p1.getNom() + " et " + other.getNom());
             System.out.println(diff);
-            // arrondir la différence à 2 décimales pour éviter les doublons imprécis
+            
+            // arrondir la différence à 2 décimales
             diff = Math.round(diff * 100.0) / 100.0;
-            // Si plusieurs pièces ont la même diff, garde la première rencontrée
-            scoreMap.putIfAbsent(diff, other);
+
+            // Ajouter la pièce à la liste associée au score
+            scoreMap.computeIfAbsent(diff, k -> new ArrayList<>()).add(other);
         }
 
-        this.pieces = new ArrayList<>(scoreMap.values());
+        // Fusionner toutes les listes dans l’ordre des scores
+        List<Piece> sortedList = new ArrayList<>();
+        for (List<Piece> group : scoreMap.values()) {
+            sortedList.addAll(group);
+        }
+
+        this.pieces = sortedList;
     }
+
     
     private double scoreDifference(Piece p1, Piece other, String direction) {
         switch (direction) {
@@ -203,23 +212,33 @@ public class ListePieces {
         }
     }
 
-	public void sortByPixelScoreInner(Piece left, Piece top, Piece bottom, Piece right) {
-		TreeMap<Double, Piece> scoreMap = new TreeMap<>();
-		for (Piece other: this.pieces) {
-			double diff=0;
-			diff+=scoreDifference(top,other,"bottom");
-			diff+=scoreDifference(left,other,"right");
-			if(bottom!=null) {
-				diff+=scoreDifference(bottom,other,"top");
-			}
-			if(right!=null) {
-				diff+=scoreDifference(right,other,"left");
-			}
-			diff = Math.round(diff * 100.0) / 100.0;
-			scoreMap.putIfAbsent(diff, other);
-		}
-		this.pieces = new ArrayList<>(scoreMap.values());
-	}
+    public void sortByPixelScoreInner(Piece left, Piece top, Piece bottom, Piece right) {
+        TreeMap<Double, List<Piece>> scoreMap = new TreeMap<>();
+
+        for (Piece other : this.pieces) {
+            double diff = 0;
+            diff += scoreDifference(top, other, "bottom");
+            diff += scoreDifference(left, other, "right");
+            if (bottom != null) {
+                diff += scoreDifference(bottom, other, "top");
+            }
+            if (right != null) {
+                diff += scoreDifference(right, other, "left");
+            }
+
+            diff = Math.round(diff * 100.0) / 100.0;
+
+            scoreMap.computeIfAbsent(diff, k -> new ArrayList<>()).add(other);
+        }
+
+
+        List<Piece> sortedList = new ArrayList<>();
+        for (List<Piece> group : scoreMap.values()) {
+            sortedList.addAll(group);
+        }
+
+        this.pieces = sortedList;
+    }
 
 	
 }

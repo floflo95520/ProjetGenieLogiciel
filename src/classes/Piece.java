@@ -874,7 +874,7 @@ public class Piece {
 		return rightScore;
 	}
 	// Méthode pour savoir si la liste contient un triplet [r,g,b]
-	boolean containsRGB(ArrayList<int[]> list, int r, int g, int b) {
+	private boolean containsRGB(ArrayList<int[]> list, int r, int g, int b) {
 		if(list!=null) {
 	    for (int[] rgb : list) {
 	        if (rgb.length == 3 && rgb[0] == r && rgb[1] == g && rgb[2] == b) {

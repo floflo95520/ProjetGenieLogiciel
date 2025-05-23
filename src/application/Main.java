@@ -26,6 +26,7 @@ import classes.Piece;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -70,18 +71,19 @@ public class Main extends Application {
 
 		            if (dossier != null) {
 		            	listView.getItems().clear();
+		            	listView.getItems().add("Fichiers trouvés et traités :");
 		                System.out.println("Dossier sélectionné : " + dossier.getAbsolutePath());
 		                File[] fichiers = dossier.listFiles();
 		                String[] imageExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp"};
 		                if (fichiers != null) {
-		                	int l=0;
+		     
 	                        for (File fichier : fichiers) {
 	                        	String nomFichier = fichier.getName().toLowerCase();
 	                        	for (String ext : imageExtensions) {
 	                        		
-	                                if (nomFichier.endsWith(ext) && (l==0 || l==1 || l==2 || l==3)) {
+	                                if (nomFichier.endsWith(ext)) {
 	                                	try {
-	                                	//	l++;
+
 	                                	String parent = fichier.getParent(); // "/home/user/images"
 	                                		String name = fichier.getName();     // "photo.png"
 	                                		String baseName = name.substring(0, name.lastIndexOf(".")); // "photo"
@@ -96,8 +98,10 @@ public class Main extends Application {
 										
 											
 										} catch (Exception e1) {
+											String errorMessage = "Erreur lors de la création des signatures d'une pièce.";
+	                        				ouvrirFenetrePuzzle(null,null,errorMessage);
+	                        				return ;
 											
-											e1.printStackTrace();
 										}
 	                                	listView.getItems().add(fichier.getName());
 	                                }
@@ -119,13 +123,9 @@ public class Main extends Application {
 	                        				innerList.removePiece(p);
 	                        			}
 	                        			else if(p.getCount()>2) {
-	                        				System.out.println(p.getNom());
-	                        				System.out.println(p.getSeqTop());
-	                        				System.out.println(p.getSeqRight());
-	                        				System.out.println(p.getSeqLeft());
-	                        				System.out.println(p.getSeqBottom());
-	                        				System.out.println("Erreur. La pièce ne peut pas voir plus de deux côtés entièrement plats");
-	                        				
+	                        				String messageErreur = "Erreur de lecture d'une ou plusieurs pièces ou bien le dossier sélectionné est incorrect.";
+	                        				ouvrirFenetrePuzzle(null,null,messageErreur);
+	                        				return;
 	                        			}
 	                        			
 	                        		}
@@ -148,23 +148,7 @@ public class Main extends Application {
 
 	                        		}
 	                        		
-	                        		
-
-
-	                        		
-	                    /*    	for (Map.Entry<String, ListePieces> entry : hm.entrySet()) {
-	                        			if(entry.getValue().getNumberOfPieces()>2) 
-	                        				
-	                        			
-	                        		    System.out.println("Signature: " + entry.getKey());
-	                        		    System.out.println("Taille de la liste associée : " + entry.getValue().getNumberOfPieces());
-	                        		    for(Piece p: entry.getValue().getPieces()) {
-	                        		    	System.out.println(p.getNom());
-	                        		    }
-	                        		    System.out.println("Taille totale de la HashMap : " + hm.size());
-	                        		    System.out.println();
-	                        			
-	                        		}*/
+	                        	
 	                        		
 	                        		
 	                        		ListePieces finalList= new ListePieces();
@@ -177,13 +161,22 @@ public class Main extends Application {
 	                        		directions.add(direction);
 	                        		int count=1;
 	                        		Puzzle puzzle=new Puzzle();
-	                        		ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions);
+	                        		int expectedSize = pieceCorners.getPieces().size() + pieceBorders.getPieces().size();
+	                        		try {
+	                        			ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize);
+	                        		}
+	                        		catch (Exception e2) {
+	                        			String errorMessage="Erreur lors de la résolution du bord du puzzle.";
+	                        			ouvrirFenetrePuzzle(null,null,errorMessage);
+	                        			return;
+	                        		}
+	                        		
 	                        		puzzle.setl(0);
 	                        		puzzle.setL(0);
 	                        		for (Piece n : finalList.getPieces()) {
-	                        			System.out.println(n.getNom());
+	                        			
 	                        			if(pieceCorners.containsPiece(n)) {
-	                        				System.out.println(n.getNom());
+	                        				
 	                        				if(puzzle.getl()==0 && count!=1) {
 	                        					puzzle.setl(count);
 	                        				}
@@ -196,14 +189,9 @@ public class Main extends Application {
 	                        		}
 	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
 	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
-	                        		System.out.println(puzzle.getl());
-	                        		System.out.println(puzzle.getL());
-	                        		System.out.println(innerList.getPieces().size());
-	                        		System.out.println(pieceBorders.getPieces().size());
-	                        		System.out.println(pieceCorners.getPieces().size());
-	                        		System.out.println(totalPieces);
 	                        		if(piecesNumber!=totalPieces){
-	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
+	                        			String errorMessage="Erreur. Les dimensions trouvées ne correspondent pas au nombre total de pièces du puzzle. Fin du programme.";
+	                        			ouvrirFenetrePuzzle(null,null,errorMessage);
 	                        		}
 	                        		
 	                        		else {
@@ -222,25 +210,6 @@ public class Main extends Application {
 	                        				signatureMap.computeIfAbsent(p.getBottomSignature(), k -> new ListePieces()).addPiece(p);
 	                        			}
 	                        			
-	                        			
-	                        		/*	for (Map.Entry<String, ListePieces> entry : signatureMap.entrySet()) {
-	                        			    String signature = entry.getKey();
-	                        			    ListePieces liste = entry.getValue();
-
-	                        			    System.out.print("Signature : " + signature + " -> [");
-
-	                        			    List<Piece> pieces = liste.getPieces();
-	                        			    for (int i = 0; i < pieces.size(); i++) {
-	                        			        System.out.print(pieces.get(i).getNom());
-	                        			        if (i < pieces.size() - 1) {
-	                        			            System.out.print(", ");
-	                        			        }
-	                        			    }
-
-	                        			    System.out.println("]");
-	                        			}*/
-
-	                        	//		System.out.println(signatureMap.size());
 	                        			
 	                        			int w=0;
 	                        			for (int i=0;i<puzzle.getl();i++) {
@@ -263,30 +232,16 @@ public class Main extends Application {
 	                        				if(w<finalList.getPieces().size())puzzle.setCase(finalList.getPieces().get(w), 0,n);
 	                        				w++;
 	                        			}
-
-	                        			
-	                        			
-	                        			resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
-	                    			
-	                        /*		for (int y = 0; y < puzzle.getL(); y++) {
-	                        			    for (int x = 0; x < puzzle.getl(); x++) {
-	                        			    	System.out.println(x);
-	                        			    	System.out.println(y);
-	                        			        Piece p = puzzle.getCase(x, y);
-	                        			        if (p != null) {
-	                        			            System.out.println("[" + x + "," + y + "] = " + p.getNom());
-	                        			        } else {
-	                        			            System.out.println("[" + x + "," + y + "] = null");
-	                        			        }
-	                        			    }
+	                        			String errorMessage=null;
+	                        			try {
+	                        				resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
+	                        			} catch (StackOverflowError error) {
+	                        			    errorMessage="Erreur lors de la résolution de l'intérieur. Veuillez reessayer plus tard.";
+	                        			    // ici, tu peux gérer le cas, comme arrêter la récursion, alerter l'utilisateur, etc.
 	                        			}
-	                        		*/
-	                        		
-	                        		for(String s: tentatives) {
-	                        			System.out.println(s.toString());
-	                        		}
+	                        
 
-	                        		ouvrirFenetrePuzzle(puzzle,tentatives);
+	                        		ouvrirFenetrePuzzle(puzzle,tentatives,errorMessage);
 
 	                        		}
 	                        	
@@ -311,7 +266,7 @@ public class Main extends Application {
 	}
 	
 	
-	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions) {
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions,int expectedSize) {
 		Piece p1=finalList.getPieces().getLast();
     		String Signature = null;
     		String oppositeDirection=p1.oppositeDirection(direction);
@@ -353,10 +308,7 @@ public class Main extends Application {
     		
     		
     		if(candidats2.isEmpty()) {
-    			System.out.println(finalList.getPieces().size());
-    			System.out.println(pieceCorners.getPieces().size());
-    			System.out.println(pieceBorders.getPieces().size());
-    			if(finalList.getPieces().size()== pieceCorners.getPieces().size() + pieceBorders.getPieces().size()) {
+    			if(finalList.getPieces().size()== expectedSize) {
     				// Vérifie que la dernière pièce connecte bien à la première
     		        Piece first = finalList.getPieces().getFirst();
     		        Piece last = finalList.getPieces().getLast();
@@ -399,7 +351,7 @@ public class Main extends Application {
     		for (Piece p:candidats2.getPieces()) {
     			p.setState(true);
     			finalList.addPiece(p);
-    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions);
+    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions,expectedSize);
     			if (success) { return true;}
     			else {
     				p.setState(false);
@@ -497,7 +449,7 @@ public class Main extends Application {
 
 
 		        p.setState(false);
-		        puzzle.setCase(null,y, x);
+		        puzzle.setCase(null,x, y);
 		 }
 		 
 		tentatives.add("tentative#"+x+y); 
@@ -560,9 +512,31 @@ public class Main extends Application {
 	}
 
 
-	private void ouvrirFenetrePuzzle(Puzzle puzzle, ArrayList<String> tentatives) {
+
+	public void ouvrirFenetrePuzzle(Puzzle puzzle, ArrayList<String> tentatives, String message) {
 
 	    Stage puzzleStage = new Stage();
+
+	    if (message != null && !message.isEmpty()) {
+	        // Afficher uniquement le message dans une fenêtre simple
+	        VBox messageBox = new VBox();
+	        messageBox.setPadding(new Insets(20));
+	        messageBox.setAlignment(Pos.CENTER);
+
+	        Label messageLabel = new Label(message);
+	        messageLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+	        Button closeButton = new Button("Fermer");
+	        closeButton.setOnAction(e -> puzzleStage.close());
+
+	        messageBox.getChildren().addAll(messageLabel, closeButton);
+
+	        Scene messageScene = new Scene(messageBox, 400, 400);
+	        puzzleStage.setScene(messageScene);
+	        puzzleStage.setTitle("Message");
+	        puzzleStage.show();
+	        return; // Sortir de la méthode après avoir affiché le message
+	    }
 
 	    BorderPane root = new BorderPane();
 	    Pane puzzlePane = new Pane();
@@ -660,12 +634,12 @@ public class Main extends Application {
 	            }
 	        }
 	    });
-	    
+
 	    Label dimensionLabel = new Label(
-	    	    "Dimensions du puzzle : " + puzzle.getl() + " x " + puzzle.getL() + 
-	    	    "\nNombre total de pièces : " + (puzzle.getl() * puzzle.getL())
-	    	);
-	    	dimensionLabel.setStyle("-fx-padding: 5; -fx-font-size: 14px; -fx-font-weight: bold;");
+	        "Dimensions du puzzle : " + puzzle.getl() + " x " + puzzle.getL() +
+	        "\nNombre total de pièces : " + (puzzle.getl() * puzzle.getL())
+	    );
+	    dimensionLabel.setStyle("-fx-padding: 5; -fx-font-size: 14px; -fx-font-weight: bold;");
 
 	    // Mise en page droite
 	    VBox rightPane = new VBox(10, dimensionLabel, tentativeLabel, tentativeList, nbTentativesLabel, saveButton);
