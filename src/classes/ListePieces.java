@@ -148,8 +148,8 @@ public class ListePieces {
                 }
                 return score;
 		case "bottom":
-            	ArrayList<int[]> tab1B=p1.getTopScore();
-                ArrayList<int[]> tab2B=other.getBottomScore();
+            	ArrayList<int[]> tab1B=p1.getBottomScore();
+                ArrayList<int[]> tab2B=other.getTopScore();
                 double scoreB=0;
                 int sizeB = Math.min(tab1B.size(), tab2B.size()); // Pour éviter IndexOutOfBounds
 
@@ -165,8 +165,8 @@ public class ListePieces {
                 }
                 return scoreB;
             case "left":
-            	ArrayList<int[]> tab1L=p1.getTopScore();
-                ArrayList<int[]> tab2L=other.getBottomScore();
+            	ArrayList<int[]> tab1L=p1.getLeftScore();
+                ArrayList<int[]> tab2L=other.getRightScore();
                 double scoreL=0;
                 int sizeL = Math.min(tab1L.size(), tab2L.size()); // Pour éviter IndexOutOfBounds
 
@@ -182,8 +182,8 @@ public class ListePieces {
                 }
                 return scoreL;
             case "right":
-            	ArrayList<int[]> tab1R=p1.getTopScore();
-                ArrayList<int[]> tab2R=other.getBottomScore();
+            	ArrayList<int[]> tab1R=p1.getRightScore();
+                ArrayList<int[]> tab2R=other.getLeftScore();
                 double scoreR=0;
                 int sizeR = Math.min(tab1R.size(), tab2R.size()); // Pour éviter IndexOutOfBounds
 
@@ -202,6 +202,24 @@ public class ListePieces {
                 throw new IllegalArgumentException("Direction inconnue : " + direction);
         }
     }
+
+	public void sortByPixelScoreInner(Piece left, Piece top, Piece bottom, Piece right) {
+		TreeMap<Double, Piece> scoreMap = new TreeMap<>();
+		for (Piece other: this.pieces) {
+			double diff=0;
+			diff+=scoreDifference(top,other,"bottom");
+			diff+=scoreDifference(left,other,"right");
+			if(bottom!=null) {
+				diff+=scoreDifference(bottom,other,"top");
+			}
+			if(right!=null) {
+				diff+=scoreDifference(right,other,"left");
+			}
+			diff = Math.round(diff * 100.0) / 100.0;
+			scoreMap.putIfAbsent(diff, other);
+		}
+		this.pieces = new ArrayList<>(scoreMap.values());
+	}
 
 	
 }

@@ -24,7 +24,7 @@ public class Puzzle {
 			return L;
 		}
 		public void setL(int l) {
-			L = l;
+			this.L = l;
 		}
 		public Piece getCase(int l,int L) {
 			return this.puzzle[L][l];

@@ -176,28 +176,36 @@ public class Piece {
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								topScore.add(new int[]{r,g,b});
+								if (!containsRGB(topScore, r, g, b)) {
+							        topScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[1][0]>0) {
 								int rgb=img.getRGB(x-1, y);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								topScore.add(new int[]{r,g,b});
+								if (!containsRGB(topScore, r, g, b)) {
+							        topScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][1]>0) {
 								int rgb=img.getRGB(x, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								topScore.add(new int[]{r,g,b});
+								if (!containsRGB(topScore, r, g, b)) {
+							        topScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][0]>0){
 								int rgb=img.getRGB(x-1, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								topScore.add(new int[]{r,g,b});
+								if (!containsRGB(topScore, r, g, b)) {
+							        topScore.add(new int[] { r, g, b });
+							    }
 							}
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								sTop.append("R");
@@ -290,28 +298,36 @@ public class Piece {
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								rightScore.add(new int[]{r,g,b});
+								if (!containsRGB(rightScore, r, g, b)) {
+							        rightScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[1][0]>0) {
 								int rgb=img.getRGB(x, y);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								rightScore.add(new int[]{r,g,b});
+								if (!containsRGB(rightScore, r, g, b)) {
+							        rightScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][1]>0) {
 								int rgb=img.getRGB(x+1, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								rightScore.add(new int[]{r,g,b});
+								if (!containsRGB(rightScore, r, g, b)) {
+							        rightScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][0]>0) {
 								int rgb=img.getRGB(x, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								rightScore.add(new int[]{r,g,b});
+								if (!containsRGB(rightScore, r, g, b)) {
+							        rightScore.add(new int[] { r, g, b });
+							    }
 							}
 							if((matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==0 && matrix[1][1]==1) || (matrix[0][0]==0 && matrix[0][1]==0 && matrix[1][0]==1 && matrix[1][1]==1) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==1 && matrix[0][1]==0)) {
 								if(t1.equals("")) {
@@ -402,28 +418,36 @@ public class Piece {
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								bottomScore.add(new int[]{r,g,b});
+								if (!containsRGB(bottomScore, r, g, b)) {
+							        bottomScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[1][0]==1) {
 								int rgb=img.getRGB(x-1, y+1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								bottomScore.add(new int[]{r,g,b});
+								if (!containsRGB(bottomScore, r, g, b)) {
+							        bottomScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][1]==1) {
 								int rgb=img.getRGB(x, y);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								bottomScore.add(new int[]{r,g,b});
+								if (!containsRGB(bottomScore, r, g, b)) {
+							        bottomScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][0]==1) {
 								int rgb=img.getRGB(x-1, y);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								bottomScore.add(new int[]{r,g,b});
+								if (!containsRGB(bottomScore, r, g, b)) {
+							        bottomScore.add(new int[] { r, g, b });
+							    }
 							}
 							if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==0 && matrix[0][1]==1)) {
 								sBottom.append("R");
@@ -519,28 +543,36 @@ public class Piece {
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								leftScore.add(new int[]{r,g,b});
+								if (!containsRGB(leftScore, r, g, b)) {
+							        leftScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[1][0]>0) {
 								int rgb=img.getRGB(x-1, y);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								leftScore.add(new int[]{r,g,b});
+								if (!containsRGB(leftScore, r, g, b)) {
+							        leftScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][1]>0) {
 								int rgb=img.getRGB(x, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								leftScore.add(new int[]{r,g,b});
+								if (!containsRGB(leftScore, r, g, b)) {
+							        leftScore.add(new int[] { r, g, b });
+							    }
 							}
 							if(matrix[0][0]>0) {
 								int rgb=img.getRGB(x-1, y-1);
 								int r=(rgb >> 16) & 0xff;
 								int g=(rgb >> 8) & 0xff;
 								int b=(rgb) & 0xff;
-								leftScore.add(new int[]{r,g,b});
+								if (!containsRGB(leftScore, r, g, b)) {
+							        leftScore.add(new int[] { r, g, b });
+							    }
 							}
 							if((matrix[0][0]==0 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[0][1]==1 && matrix[1][0]==0 && matrix[1][1]==0) || (matrix[0][0]==1 && matrix[1][0]==1 && matrix[1][1]==0 && matrix[0][1]==1)) {
 								if(t3.equals("")) {
@@ -841,4 +873,15 @@ public class Piece {
 	public ArrayList<int[]> getRightScore() {
 		return rightScore;
 	}
+	// Méthode pour savoir si la liste contient un triplet [r,g,b]
+	boolean containsRGB(ArrayList<int[]> list, int r, int g, int b) {
+		if(list!=null) {
+	    for (int[] rgb : list) {
+	        if (rgb.length == 3 && rgb[0] == r && rgb[1] == g && rgb[2] == b) {
+	            return true;
+	        }
+	    }}
+	    return false;
+	}
+
 }

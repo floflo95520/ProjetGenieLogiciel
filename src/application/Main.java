@@ -3,6 +3,7 @@ package application;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,16 +24,22 @@ import classes.Piece;
 
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 
 
@@ -166,12 +173,31 @@ public class Main extends Application {
 	                        		directions.add(direction);
 	                        		int count=1;
 	                        		Puzzle puzzle=new Puzzle();
-	                        		ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,puzzle,directions);
+	                        		ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions);
+	                        		puzzle.setl(0);
+	                        		puzzle.setL(0);
+	                        		for (Piece n : finalList.getPieces()) {
+	                        			System.out.println(n.getNom());
+	                        			if(pieceCorners.containsPiece(n)) {
+	                        				System.out.println(n.getNom());
+	                        				if(puzzle.getl()==0 && count!=1) {
+	                        					puzzle.setl(count);
+	                        				}
+	                        				else if(puzzle.getL()==0 && count!=1) {
+	                        					puzzle.setL(count);
+	                        				}
+	                        				count=1;
+	                        			}
+	                        			count++;
+	                        		}
 	                        		int piecesNumber=puzzle.getl()*puzzle.getL();
 	                        		int totalPieces=innerList.getPieces().size()+pieceBorders.getPieces().size()+pieceCorners.getPieces().size();
-	                        /*		for (Piece n : finalList.getPieces()) {
-	                        			System.out.println(n.getNom());
-	                        		}*/
+	                        		System.out.println(puzzle.getl());
+	                        		System.out.println(puzzle.getL());
+	                        		System.out.println(innerList.getPieces().size());
+	                        		System.out.println(pieceBorders.getPieces().size());
+	                        		System.out.println(pieceCorners.getPieces().size());
+	                        		System.out.println(totalPieces);
 	                        		if(piecesNumber!=totalPieces){
 	                        			listView.getItems().add("Problème lors de l'assemblage des pièces détecté.");
 	                        		}
@@ -238,7 +264,7 @@ public class Main extends Application {
 	                        			
 	                        			resolveInner(puzzle,signatureMap,1,1,puzzle.getL()-1,puzzle.getl()-1,tentatives);
 	                    			
-	                        		for (int y = 0; y < puzzle.getL(); y++) {
+	                        /*		for (int y = 0; y < puzzle.getL(); y++) {
 	                        			    for (int x = 0; x < puzzle.getl(); x++) {
 	                        			    	System.out.println(x);
 	                        			    	System.out.println(y);
@@ -250,13 +276,13 @@ public class Main extends Application {
 	                        			        }
 	                        			    }
 	                        			}
-	                        		
+	                        		*/
 	                        		
 	                        		for(String s: tentatives) {
 	                        			System.out.println(s.toString());
 	                        		}
 
-	                        		ouvrirFenetrePuzzle(puzzle);
+	                        		ouvrirFenetrePuzzle(puzzle,tentatives);
 
 	                        		}
 	                        	
@@ -272,7 +298,7 @@ public class Main extends Application {
 			root.setTop(D);
 			root.setCenter(listView);
 			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		} catch(Exception e) {
@@ -281,19 +307,11 @@ public class Main extends Application {
 	}
 	
 	
-	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, int count, String direction, ListePieces pieceCorners,ListePieces pieceBorders, Puzzle dimImg,ArrayList<String> directions) {
+	private Boolean ResolveBorder(HashMap<String, ListePieces> hm, ListePieces finalList, String direction, ListePieces pieceCorners,ListePieces pieceBorders,ArrayList<String> directions) {
 		Piece p1=finalList.getPieces().getLast();
     		String Signature = null;
     		String oppositeDirection=p1.oppositeDirection(direction);
     		if(pieceCorners.containsPiece(p1)) {
-    			count++;
-    			if(dimImg.getl()==0 || dimImg.getl()==1 || dimImg.getl()==2) {
-    				dimImg.setl(count);
-    			}
-    			else if(dimImg.getL()==0) {
-    				dimImg.setL(count);
-    			}
-    			count=0;
     			direction=changeDirection(oppositeDirection,p1);
     			directions.add(direction);
     		}
@@ -375,13 +393,11 @@ public class Main extends Application {
     		}
     		
     		for (Piece p:candidats2.getPieces()) {
-    			count++;
     			p.setState(true);
     			finalList.addPiece(p);
-    			Boolean success=ResolveBorder(hm,finalList,count,direction,pieceCorners,pieceBorders,dimImg,directions);
+    			Boolean success=ResolveBorder(hm,finalList,direction,pieceCorners,pieceBorders,directions);
     			if (success) { return true;}
     			else {
-    				if(count<0)count--;
     				p.setState(false);
     				finalList.removePiece(p);
     			}
@@ -465,6 +481,7 @@ public class Main extends Application {
 		 }
 		 ListePieces candidats=getCandidatsBySignature(hm,leftSig,topSig,bottomSig,rightSig);
 		 ListePieces filteredCandidates=filterByUsed(candidats);
+		// filteredCandidates.sortByPixelScoreInner(puzzle.getCase(x-1, y),puzzle.getCase(x, y-1),puzzle.getCase(x, y+1),puzzle.getCase(x+1, y));
 		 
 		 for (Piece p:filteredCandidates.getPieces()) {
 			 p.setState(true);
@@ -539,61 +556,46 @@ public class Main extends Application {
 	}
 
 
-	private void ouvrirFenetrePuzzle(Puzzle puzzle) {
+	private void ouvrirFenetrePuzzle(Puzzle puzzle, ArrayList<String> tentatives) {
 	    Stage puzzleStage = new Stage();
-	    Pane puzzlePane = new Pane();
-	    //final double TAILLE_CASE = 100;
-	    //int i = 0;
-	    int x = 0, y=0;
-	    double yplus = 0;
-	    int[][] tab2 = Piece.corners(puzzle.getCase(0, 0).getImg());
-        int x3 = tab2[0][0];
-        int x4 = tab2[1][0];
-        int y3 = tab2[0][1];
-        int y4 = tab2[2][1];
-        System.out.println("x2: " + tab2[1][0]);
-        int TailleX = (x4 - x3) * puzzle.getl();
-        System.out.println(TailleX);
-        int TailleY = (y4 - y3) * puzzle.getL();
-        System.out.println(TailleY);
-        double ratio;
-        if(TailleX > TailleY) {
-        	//puzzle en mode paysage
-        	ratio = 1000.0 / TailleX;
-        	System.out.println(ratio);
-        }
-        else {
-        	ratio = 1000.0 / TailleY;
-        }
-        
-        System.out.println("ratio: " + ratio);
-	    for(int i = 0; i < puzzle.getL(); i++) {
-	    	for(int j = 0; j < puzzle.getl(); j++) {
-	    		
-	    		Piece piece = puzzle.getCase(j,i);
 
-	    		
-	    		//double ratio = 0.3;
-	    		if (piece == null || piece.getImg() == null) continue;
-	    		
-	    		try {
-	    			
-	    			BufferedImage bufferedImage = piece.getImg();
-	    			WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+	    BorderPane root = new BorderPane();
+	    Pane puzzlePane = new Pane();
+
+	    int[][] tab2 = Piece.corners(puzzle.getCase(0, 0).getImg());
+	    int x3 = tab2[0][0];
+	    int x4 = tab2[1][0];
+	    int y3 = tab2[0][1];
+	    int y4 = tab2[2][1];
+
+	    int TailleX = (x4 - x3) * puzzle.getl();
+	    int TailleY = (y4 - y3) * puzzle.getL();
+
+	    double ratio = (TailleX > TailleY) ? 1000.0 / TailleX : 1000.0 / TailleY;
+
+	    double yplus = 0;
+	    int x = 0, y = 0;
+
+	    for (int i = 0; i < puzzle.getL(); i++) {
+	        for (int j = 0; j < puzzle.getl(); j++) {
+	            Piece piece = puzzle.getCase(j, i);
+	            if (piece == null || piece.getImg() == null) continue;
+
+	            try {
+	                BufferedImage bufferedImage = piece.getImg();
+	                WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
 	                ImageView imageView = new ImageView(fxImage);
-	                
-					imageView.setFitWidth(fxImage.getWidth() * ratio);
+
+	                imageView.setFitWidth(fxImage.getWidth() * ratio);
 	                imageView.setFitHeight(fxImage.getHeight() * ratio);
 	                imageView.setPreserveRatio(false);
-	    			
-	             // Récupération des coins de la piece
+
 	                int[][] tab = Piece.corners(bufferedImage);
 	                int x1 = tab[0][0];
 	                int x2 = tab[1][0];
 	                int y1 = tab[0][1];
 	                int y2 = tab[2][1];
 
-	                // Positionnement
 	                imageView.setLayoutX(x - (x1 * ratio));
 	                imageView.setLayoutY(y - (y1 * ratio));
 
@@ -609,21 +611,74 @@ public class Main extends Application {
 	                }
 
 	                puzzlePane.getChildren().add(imageView);
-	                
-	    		} catch (Exception e) {
-	    			e.printStackTrace();
-	    		}
-	    		
-	    		
-	    	}
+
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
 	    }
+
+	    // Liste des tentatives avec label
+	    Label tentativeLabel = new Label("Tentatives");
+	    tentativeLabel.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
+
+	    ListView<String> tentativeList = new ListView<>();
+	    if (tentatives.isEmpty()) {
+	        tentativeList.getItems().add("Le puzzle a été réussi du premier coup");
+	    } else {
+	        tentativeList.getItems().addAll(tentatives);
+	    }
+	    tentativeList.setPrefWidth(250);
+	    tentativeList.setPrefHeight(400);
+
+	    // Nombre de tentatives
+	    Label nbTentativesLabel = new Label("Nombre de tentatives : " + tentatives.size());
+	    nbTentativesLabel.setStyle("-fx-padding: 10px; -fx-font-size: 14px;");
+
+	    // Bouton pour enregistrer l'image
+	    Button saveButton = new Button("Enregistrer l'image");
+	    saveButton.setOnAction(e -> {
+	        WritableImage snapshot = puzzlePane.snapshot(new SnapshotParameters(), null);
+
+	        FileChooser fileChooser = new FileChooser();
+	        fileChooser.setTitle("Enregistrer l'image recomposée");
+	        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image PNG", "*.png"));
+	        File file = fileChooser.showSaveDialog(puzzleStage);
+
+	        if (file != null) {
+	            try {
+	                ImageIO.write(SwingFXUtils.fromFXImage(snapshot, null), "png", file);
+	            } catch (IOException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	    });
 	    
-	    System.out.println("tailleX " + TailleX + "tailleY" + TailleY + "ratio: " +ratio);
-	    Scene scene = new Scene(puzzlePane, TailleX * ratio + 10, TailleY * ratio + 10);
+	    Label dimensionLabel = new Label(
+	    	    "Dimensions du puzzle : " + puzzle.getl() + " x " + puzzle.getL() + 
+	    	    "\nNombre total de pièces : " + (puzzle.getl() * puzzle.getL())
+	    	);
+	    	dimensionLabel.setStyle("-fx-padding: 5; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+	    // Mise en page droite
+	    VBox rightPane = new VBox(10, dimensionLabel, tentativeLabel, tentativeList, nbTentativesLabel, saveButton);
+	    rightPane.setPadding(new Insets(10));
+
+	    // ScrollPane pour le puzzle si grand
+	    ScrollPane scrollPane = new ScrollPane(puzzlePane);
+	    scrollPane.setFitToWidth(true);
+	    scrollPane.setFitToHeight(true);
+
+	    root.setCenter(scrollPane);
+	    root.setRight(rightPane);
+
+	    Scene scene = new Scene(root, TailleX * ratio + 300, TailleY * ratio + 50);
 	    puzzleStage.setScene(scene);
-	    puzzleStage.setTitle("Puzzle");
+	    puzzleStage.setTitle("Puzzle Résolu");
 	    puzzleStage.show();
 	}
+
+
 	
 	
 	public static void main(String[] args) {
