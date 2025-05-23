@@ -1,6 +1,7 @@
 package application;
 	
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +33,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -557,6 +561,7 @@ public class Main extends Application {
 
 
 	private void ouvrirFenetrePuzzle(Puzzle puzzle, ArrayList<String> tentatives) {
+
 	    Stage puzzleStage = new Stage();
 
 	    BorderPane root = new BorderPane();
@@ -579,15 +584,16 @@ public class Main extends Application {
 	    for (int i = 0; i < puzzle.getL(); i++) {
 	        for (int j = 0; j < puzzle.getl(); j++) {
 	            Piece piece = puzzle.getCase(j, i);
-	            if (piece == null || piece.getImg() == null) continue;
-
-	            try {
-	                BufferedImage bufferedImage = piece.getImg();
-	                WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+	    		//double ratio = 0.3;
+	    		if (piece == null || piece.getImg() == null) continue;
+	    		
+	    		try {
+	    			BufferedImage bufferedImage = piece.getImg();
+	    			WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
 	                ImageView imageView = new ImageView(fxImage);
-
-	                imageView.setFitWidth(fxImage.getWidth() * ratio);
-	                imageView.setFitHeight(fxImage.getHeight() * ratio);
+	                
+					imageView.setFitWidth(Math.round(fxImage.getWidth() * ratio));
+	                imageView.setFitHeight(Math.round(fxImage.getHeight() * ratio));
 	                imageView.setPreserveRatio(false);
 
 	                int[][] tab = Piece.corners(bufferedImage);
@@ -596,8 +602,9 @@ public class Main extends Application {
 	                int y1 = tab[0][1];
 	                int y2 = tab[2][1];
 
-	                imageView.setLayoutX(x - (x1 * ratio));
-	                imageView.setLayoutY(y - (y1 * ratio));
+	                // Positionnement
+	                imageView.setLayoutX(Math.round(x - (x1 * ratio)));
+	                imageView.setLayoutY(Math.round(y - (y1 * ratio)));
 
 	                if (j == 0) {
 	                    yplus = (y2 - y1) * ratio;
