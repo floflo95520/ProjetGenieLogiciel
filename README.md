@@ -17,4 +17,6 @@ Une fois le puzzle résolu, vous aurez l'image finale qui s'affichera, le nombre
 
 En espérant que cela vous ait été utile.
 
+PS : Le dossier "out" contient déjà une version compilée du projet. Ainsi, pour le tester vous n'aurez normalement pas besoin de le compiler. Vous n'aurez qu'à entrer la commande pour l'éxécuter toujours à partir du dossier racine du projet.
+
 Bonne journée !
